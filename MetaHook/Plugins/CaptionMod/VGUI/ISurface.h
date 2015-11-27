@@ -50,6 +50,7 @@ public:
 		FONTFLAG_ADDITIVE = 0x100,
 		FONTFLAG_OUTLINE = 0x200,
 		FONTFLAG_CUSTOM = 0x400,
+		FONTFLAG_OUTLINE2 = 0x800,
 	};
 
 	enum SurfaceFeature_e

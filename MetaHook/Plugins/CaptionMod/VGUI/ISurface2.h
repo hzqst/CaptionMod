@@ -164,6 +164,7 @@ public:
 		OPENING_NEW_HTML_WINDOWS	= 4,
 		FRAME_MINIMIZE_MAXIMIZE		= 5,
 		DIRECT_HWND_RENDER			= 6,
+		OUTLINE_FONTS = 7,
 	};
 	bool SupportsFeature( SurfaceFeature_e feature );
 
@@ -201,9 +202,11 @@ public:
 		FONTFLAG_DROPSHADOW		= 0x080,
 		FONTFLAG_ADDITIVE		= 0x100,
 		FONTFLAG_OUTLINE		= 0x200,
+		FONTFLAG_CUSTOM			= 0x400,
+		FONTFLAG_OUTLINE2		= 0x800,
 	};
 
-	bool SetFontGlyphSet( HFont font, const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags );
+	bool AddGlyphSetToFont( HFont font, const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags );
 
 	// adds a custom font file (only supports true type font files (.ttf) for now)
 	bool AddCustomFontFile( const char *fontFileName );

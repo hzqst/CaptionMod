@@ -32,8 +32,9 @@ public:
 	const char *GetFallbackFontName(const char *windowsFontName);
 	const char *GetForeignFallbackFontName(void);
 	bool GetFontUnderlined(HFont font);
+	bool GetFontOutlined(HFont font);
 	CWin32Font *CreateOrFindWin32Font(const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags);
-	bool AddCustomFontFile(const char *fontFileName);
+	bool AddCustomFontFile(const char *fontFileName);	
 private:
 	const char *GetIconTitleFontName(void);
 

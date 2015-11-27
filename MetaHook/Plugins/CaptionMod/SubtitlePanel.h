@@ -161,6 +161,7 @@ protected:
 	CPanelAnimationVar( int, m_iPrefix, "prefix", "1" );
 	CPanelAnimationVar( int, m_iWaitPlay, "waitplay", "1" );
 	CPanelAnimationVar( float, m_flStartTimeScale, "stimescale", "1" );
+	CPanelAnimationVar( float, m_flHoldTimeScale, "htimescale", "1" );
 
 public:
 	//“ª–© Ù–‘

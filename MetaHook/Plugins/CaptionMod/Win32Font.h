@@ -48,6 +48,7 @@ public:
 	virtual const char *GetName(void) { return m_szName; }
 	virtual bool GetUnderlined(void);
 	virtual int GetAscent(void);
+	virtual bool GetOutlined(void);
 
 private:
 	void ApplyScanlineEffectToTexture(int rgbaX, int rgbaY, int rgbaWide, int rgbaTall, unsigned char *rgba);
@@ -70,6 +71,7 @@ public:
 	bool m_bAdditive;
 	int m_iDropShadowOffset;
 	bool m_bUnderlined;
+	bool m_bOutlined;
 	int m_iOutlineSize;
 	int m_iHeight;
 	int m_iMaxCharWidth;

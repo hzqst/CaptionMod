@@ -49,8 +49,8 @@ public:
 public:
 	virtual const char *GetName(void)const;
 	virtual int GetNameSymbol(void)const;
-	virtual bool LoadFromFile(IBaseFileSystem *filesystem, const char *resourceName, const char *pathID = NULL);
-	virtual bool SaveToFile(IBaseFileSystem *filesystem, const char *resourceName, const char *pathID = NULL);
+	virtual bool LoadFromFile(IFileSystem *filesystem, const char *resourceName, const char *pathID = NULL);
+	virtual bool SaveToFile(IFileSystem *filesystem, const char *resourceName, const char *pathID = NULL);
 	virtual KeyValues *FindKey(const char *keyName, bool bCreate = false);
 	virtual KeyValues *FindKey(int keySymbol) const;
 	virtual KeyValues *CreateNewKey(void);

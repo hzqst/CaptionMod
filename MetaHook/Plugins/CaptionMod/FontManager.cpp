@@ -54,7 +54,7 @@ bool CFontManager::AddGlyphSetToFont(HFont font, const char *windowsFontName, in
 
 	CWin32Font *winFont = CreateOrFindWin32Font(windowsFontName, tall, weight, blur, scanlines, flags);
 
-	if (true)//flags & vgui::ISurface::FONTFLAG_CUSTOM)
+	if (flags & vgui::ISurface::FONTFLAG_CUSTOM)
 	{
 		if (winFont)
 			m_FontAmalgams[font].AddFont(winFont, 0x0, 0xFFFF);
@@ -281,6 +281,11 @@ const char *CFontManager::GetForeignFallbackFontName(void)
 bool CFontManager::GetFontUnderlined(vgui::HFont font)
 {
 	return m_FontAmalgams[font].GetUnderlined();
+}
+
+bool CFontManager::GetFontOutlined(vgui::HFont font)
+{
+	return m_FontAmalgams[font].GetOutlined();
 }
 
 CWin32Font *CFontManager::CreateOrFindWin32Font(const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags)

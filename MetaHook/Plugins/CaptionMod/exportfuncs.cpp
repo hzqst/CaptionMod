@@ -46,10 +46,41 @@ void HUD_Init(void)
 	gEngfuncs.pfnAddCommand("cap_version", Cap_Version_f);
 }
 
-static qboolean m_bStartSound = false;
+static CDictionary *m_SentenceDictionary = NULL;
 static qboolean m_bSentenceSound = false;
+static float m_flSentenceDuration = 0;
 
-void S_WavSubtitle(sfx_t *sfx)
+float S_GetDuration(sfx_t *sfx)
+{
+	float flDuration = 0;
+
+	if(sfx->name[0] != '*' && sfx->name[0] != '?')
+	{
+		//MetaAudio is active? use MetaAudio's structs
+		if(al_enable && al_enable->value)
+		{
+			aud_sfxcache_t *asc = (aud_sfxcache_t *)gCapFuncs.S_LoadSound(sfx, NULL);
+			//not a voice sound
+			if(asc && asc->length != 0x40000000)
+			{
+				flDuration = (float)asc->length / asc->speed;
+			}
+		}
+		else
+		{
+			sfxcache_t *sc = gCapFuncs.S_LoadSound(sfx, NULL);
+			//not a voice sound
+			if(sc && sc->length != 0x40000000)
+			{
+				flDuration = (float)sc->length / sc->speed;
+			}
+		}
+	}
+	return flDuration;
+}
+
+//2015-11-26 added, support added up the duration of sound for zero-duration sentences
+void S_StartWave(sfx_t *sfx)
 {
 	const char *name = sfx->name;
 
@@ -58,7 +89,19 @@ void S_WavSubtitle(sfx_t *sfx)
 	else if(!Q_strnicmp(name + 1, "sound/", 6))
 		name += 7;
 
-	CDictionary *Dict = g_pViewPort->FindDictionary(name);
+	if(m_bSentenceSound && m_SentenceDictionary)
+	{
+		if(m_SentenceDictionary->m_flDuration <= 0)
+		{
+			float flDuration = S_GetDuration(sfx);
+			if(flDuration > 0)
+			{
+				m_flSentenceDuration += flDuration;
+			}
+		}
+	}
+
+	CDictionary *Dict = g_pViewPort->FindDictionary(name, DICT_SOUND);
 
 	if(cap_show && cap_show->value)
 	{
@@ -68,104 +111,119 @@ void S_WavSubtitle(sfx_t *sfx)
 	if(!Dict)
 		return;
 
-	if(!Dict->m_Type == DICT_SOUND)
-		return;
-
-	//Skip steam / voice sound
-	if(Dict->m_flDuration <= 0 && name[0] != '*' && name[0] != '?')
+	//Get duration for zero-duration
+	if(Dict->m_flDuration <= 0)
 	{
-		//Meta Audio is active
-		if(al_enable && al_enable->value)
+		float flDuration = S_GetDuration(sfx);
+		if(flDuration > 0)
 		{
-			aud_sfxcache_t *asc = (aud_sfxcache_t *)gCapFuncs.S_LoadSound(sfx, NULL);
-			//not a voice sound
-			if(asc && asc->length != 0x40000000)
-			{
-				Dict->m_flDuration = (float)asc->length / asc->speed;
-			}
+			Dict->m_flDuration = flDuration;
 		}
-		else
-		{
-			sfxcache_t *sc = gCapFuncs.S_LoadSound(sfx, NULL);
-			//not a voice sound
-			if(sc && sc->length != 0x40000000)
-			{
-				Dict->m_flDuration = (float)sc->length / sc->speed;
-			}
-		}
+	}
+
+	if(Dict->m_flDuration > 0)
+	{
+		m_flSentenceDuration += Dict->m_flDuration;
 	}
 
 	g_pViewPort->StartSubtitle(Dict);
 }
 
-void S_SentenceSubtitle(const char *name)
+void S_StartSentence(const char *name)
 {
-	CDictionary *Dict = g_pViewPort->FindDictionary(name);
+	CDictionary *Dict = g_pViewPort->FindDictionary(name, DICT_SENTENCE);	
+
+	if(!Dict)
+	{
+		//skip ! and # then search again
+		Dict = g_pViewPort->FindDictionary(name + 1);
+	}
 
 	if(cap_show && cap_show->value)
 	{
 		gEngfuncs.Con_Printf((Dict) ? "CaptionMod: SENTENCE [%s] found.\n" : "CaptionMod: SENTENCE [%s] not found.\n", name);
 	}
 
-	if(!Dict)
-		return;
-
-	g_pViewPort->StartSubtitle(Dict);
+	m_SentenceDictionary = Dict;
 }
 
+//2015-11-26 fixed, to support !SENTENCE and #SENTENCE
+void S_EndSentence(void)
+{
+	if(!m_SentenceDictionary)
+		return;
+
+	//use the total duration we added up before
+	if(m_SentenceDictionary->m_flDuration <= 0 && m_flSentenceDuration > 0)
+	{
+		m_SentenceDictionary->m_flDuration = m_flSentenceDuration;
+	}
+
+	g_pViewPort->StartSubtitle(m_SentenceDictionary);
+}
+
+//2015-11-26 fixed, to support !SENTENCE and #SENTENCE
+//2015-11-26 added, support added up the duration of sound for zero-duration sentences
 void S_StartDynamicSound(int entnum, int entchannel, sfx_t *sfx, float *origin, float fvol, float attenuation, int flags, int pitch)
 {
-	m_bStartSound = true;
-
 	if(sfx)
 	{
 		if(sfx->name[0] == '!' || sfx->name[0] == '#')
 		{
 			m_bSentenceSound = true;
-			S_SentenceSubtitle(sfx->name + 1);
+			m_flSentenceDuration = 0;
+			S_StartSentence(sfx->name);
 		}
 		else
 		{
-			S_WavSubtitle(sfx);
+			S_StartWave(sfx);
 		}
 	}
 
 	gCapFuncs.S_StartDynamicSound(entnum, entchannel, sfx, origin, fvol, attenuation, flags, pitch);
 
-	m_bStartSound = false;
-	m_bSentenceSound = false;
+	if(m_bSentenceSound)
+	{
+		S_EndSentence();
+		m_bSentenceSound = false;
+	}
 }
 
+//2015-11-26 fixed, to support !SENTENCE and #SENTENCE
+//2015-11-26 added, support added up the duration of sound for zero-duration sentences
 void S_StartStaticSound(int entnum, int entchannel, sfx_t *sfx, float *origin, float fvol, float attenuation, int flags, int pitch)
 {
-	m_bStartSound = true;
-
 	if(sfx)
 	{
 		if(sfx->name[0] == '!' || sfx->name[0] == '#')
 		{
 			m_bSentenceSound = true;
-			S_SentenceSubtitle(sfx->name + 1);
+			m_flSentenceDuration = 0;
+			S_StartSentence(sfx->name);
 		}
 		else
 		{
-			S_WavSubtitle(sfx);
+			S_StartWave(sfx);
 		}
 	}
 
 	gCapFuncs.S_StartStaticSound(entnum, entchannel, sfx, origin, fvol, attenuation, flags, pitch);
 
-	m_bStartSound = false;
-	m_bSentenceSound = false;
+	if(m_bSentenceSound)
+	{
+		S_EndSentence();
+		m_bSentenceSound = false;
+	}
 }
 
 sfx_t *S_FindName(char *name, int *pfInCache)
 {
 	sfx_t *sfx = gCapFuncs.S_FindName(name, pfInCache);;
 
+	//we should add
 	if(m_bSentenceSound && sfx)
 	{
-		S_WavSubtitle(sfx);
+		S_StartWave(sfx);
 	}
 	return sfx;
 }

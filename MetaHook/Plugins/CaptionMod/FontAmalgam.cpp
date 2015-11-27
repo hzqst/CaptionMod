@@ -107,3 +107,11 @@ bool CFontAmalgam::GetUnderlined(void)
 
 	return m_Fonts[0].font->GetUnderlined();
 }
+
+bool CFontAmalgam::GetOutlined(void)
+{
+	if (!m_Fonts.Count())
+		return false;
+
+	return m_Fonts[0].font->GetOutlined();
+}

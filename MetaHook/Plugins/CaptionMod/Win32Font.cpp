@@ -93,6 +93,7 @@ bool CWin32Font::Create(const char *windowsFontName, int tall, int weight, int b
 	m_bUnderlined = flags & vgui::ISurface::FONTFLAG_UNDERLINE;
 	m_iDropShadowOffset = (flags & vgui::ISurface::FONTFLAG_DROPSHADOW) ? 1 : 0;
 	m_iOutlineSize = (flags & vgui::ISurface::FONTFLAG_OUTLINE) ? 1 : 0;
+	m_bOutlined = (flags & vgui::ISurface::FONTFLAG_OUTLINE2) ? true : false;
 	m_iBlur = blur;
 	m_iScanLines = scanlines;
 	m_bRotary = (flags & vgui::ISurface::FONTFLAG_ROTARY) ? 1 : 0;
@@ -441,7 +442,7 @@ void CWin32Font::ApplyOutlineToTexture(int rgbaX, int rgbaY, int rgbaWide, int r
 		{
 			unsigned char *src = &rgba[(x + rgbaX + ((rgbaY + y) * rgbaWide)) * 4];
 
-			if (src[3] == 0)
+			if (src[3] < 32)
 			{
 				int shadowX, shadowY;
 
@@ -625,6 +626,11 @@ int CWin32Font::GetFlags(void)
 bool CWin32Font::GetUnderlined(void)
 {
 	return m_bUnderlined;
+}
+
+bool CWin32Font::GetOutlined(void)
+{
+	return m_bOutlined;
 }
 
 int CWin32Font::GetAscent(void)

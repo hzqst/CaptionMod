@@ -14,7 +14,9 @@ using namespace vgui;
 
 CHudMessage m_HudMessage;
 
+//2015-11-27 added, support for Counter-Strike's HudTextPro message
 pfnUserMsgHook m_pfnHudText;
+pfnUserMsgHook m_pfnHudTextPro;
 pfnUserMsgHook m_pfnHudTextArgs;
 
 int __MsgFunc_HudText(const char *pszName, int iSize, void *pbuf)
@@ -23,6 +25,14 @@ int __MsgFunc_HudText(const char *pszName, int iSize, void *pbuf)
 		return 1;
 
 	return m_pfnHudText(pszName, iSize, pbuf);
+}
+
+int __MsgFunc_HudTextPro(const char *pszName, int iSize, void *pbuf)
+{
+	if(m_HudMessage.MsgFunc_HudText(pszName, iSize, pbuf) != 0)
+		return 1;
+
+	return m_pfnHudTextPro(pszName, iSize, pbuf);
 }
 
 int __MsgFunc_HudTextArgs(const char *pszName, int iSize, void *pbuf)
@@ -36,6 +46,7 @@ int __MsgFunc_HudTextArgs(const char *pszName, int iSize, void *pbuf)
 void CHudMessage::Init(void)
 {
 	m_pfnHudText = HOOK_MESSAGE(HudText);
+	m_pfnHudTextPro = HOOK_MESSAGE(HudTextPro);
 	m_pfnHudTextArgs = HOOK_MESSAGE(HudTextArgs);
 }
 
@@ -465,7 +476,7 @@ int CHudMessage::MsgFunc_HudText(const char *pszName, int iSize, void *pbuf)
 	if (!READ_OK())
 		hintMessage = 0;
 
-	CDictionary *dict = g_pViewPort->FindDictionary(pString);
+	CDictionary *dict = g_pViewPort->FindDictionary(pString, DICT_MESSAGE);
 
 	if(cap_show && cap_show->value)
 	{
@@ -494,7 +505,7 @@ int CHudMessage::MsgFunc_HudTextArgs(const char *pszName, int iSize, void *pbuf)
 	char *pString = READ_STRING();
 	int hintMessage = READ_BYTE();
 
-	CDictionary *dict = g_pViewPort->FindDictionary(pString);
+	CDictionary *dict = g_pViewPort->FindDictionary(pString, DICT_MESSAGE);
 
 	if(cap_show && cap_show->value)
 	{
@@ -503,6 +514,8 @@ int CHudMessage::MsgFunc_HudTextArgs(const char *pszName, int iSize, void *pbuf)
 
 	if(dict && dict->m_pTextMessage)
 	{
+		dict->ReplaceKey();
+
 		int slotNum = MessageAdd(dict->m_pTextMessage, cl_time, hintMessage, m_hFont);
 
 		if (slotNum > -1)
@@ -519,6 +532,8 @@ int CHudMessage::MsgFunc_HudTextArgs(const char *pszName, int iSize, void *pbuf)
 				vgui::localize()->ConvertANSIToUnicode(tmp, m_pMessages[slotNum].args[i], MESSAGE_ARG_LEN);
 			}
 		}
+
+		g_pViewPort->StartNextSubtitle(dict);
 
 		m_parms.time = cl_time;
 		return 1;

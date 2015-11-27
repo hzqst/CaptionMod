@@ -25,6 +25,7 @@ enum dict_t
 	DICT_CUSTOM,
 	DICT_SOUND,
 	DICT_MESSAGE,
+	DICT_SENTENCE,
 };
 
 enum textalign_t
@@ -42,6 +43,7 @@ public:
 	~CDictionary();
 	void Load(CSV::CSVDocument::row_type &row, Color &defaultColor, vgui::IScheme *ischeme);
 	void ReplaceKey(void);
+	void ReplaceReturn(void);
 	void AddPrefix(void);
 
 	dict_t					m_Type;
@@ -94,6 +96,7 @@ public:
 
 	//Dictionary Hashtable
 	CDictionary *FindDictionary(const char *szValue);
+	CDictionary *FindDictionary(const char *szValue, dict_t Type);
 	int CaseInsensitiveHash(const char *string, int iBounds);
 	void EmptyDictionaryHash(void);
 	void AddDictionaryHash(CDictionary *dict, const char *value);

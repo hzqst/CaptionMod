@@ -46,8 +46,9 @@ public:
 	// colors
 	virtual Color GetColor(const char *colorName, Color defaultColor) = 0;
 
-	// inverse font lookup
-	char const *GetFontName( const HFont& font );
+public:
+	const char *GetName(void);
+	char const *GetFontName(const HFont &font);
 };
 
 
@@ -55,53 +56,21 @@ public:
 class ISchemeManager: public IBaseInterface
 {
 public:
-	// loads a scheme from a file
-	// first scheme loaded becomes the default scheme, and all subsequent loaded scheme are derivitives of that
 	virtual HScheme LoadSchemeFromFile(const char *fileName, const char *tag) = 0;
-
-	// reloads the scheme from the file - should only be used during development
 	virtual void ReloadSchemes(void) = 0;
-
-	// returns a handle to the default (first loaded) scheme
 	virtual HScheme GetDefaultScheme(void) = 0;
-
-	// returns a handle to the scheme identified by "tag"
 	virtual HScheme GetScheme(const char *tag) = 0;
-
-	// returns a pointer to an image
 	virtual IImage *GetImage(const char *imageName, bool hardwareFiltered) = 0;
 	virtual HTexture GetImageID(const char *imageName, bool hardwareFiltered) = 0;
-
-	// This can only be called at certain times, like during paint()
-	// It will assert-fail if you call it at the wrong time...
-
-	// FIXME: This interface should go away!!! It's an icky back-door
-	// If you're using this interface, try instead to cache off the information
-	// in ApplySchemeSettings
 	virtual IScheme *GetIScheme(HScheme scheme) = 0;
-
-	// unload all schemes
 	virtual void Shutdown(bool full = true) = 0;
-
-	// gets the proportional coordinates for doing screen-size independant panel layouts
-	// use these for font, image and panel size scaling (they all use the pixel height of the display for scaling)
 	virtual int GetProportionalScaledValue(int normalizedValue) = 0;
 	virtual int GetProportionalNormalizedValue(int scaledValue) = 0;
 
-	// reloads scheme fonts
-	void ReloadFonts();
-
-	// loads a scheme from a file
-	// first scheme loaded becomes the default scheme, and all subsequent loaded scheme are derivitives of that
-	HScheme LoadSchemeFromFileEx( VPANEL sizingPanel, const char *fileName, const char *tag);
-	// gets the proportional coordinates for doing screen-size independant panel layouts
-	// use these for font, image and panel size scaling (they all use the pixel height of the display for scaling)
-	int GetProportionalScaledValueEx( HScheme scheme, int normalizedValue );
-	int GetProportionalNormalizedValueEx( HScheme scheme, int scaledValue );
-
-#ifdef _XBOX
-	void DeleteImage( const char *pImageName );
-#endif
+public:
+	HScheme LoadSchemeFromFileEx(VPANEL sizingPanel, const char *fileName, const char *tag);
+	int GetProportionalScaledValueEx(HScheme scheme, int normalizedValue);
+	int GetProportionalNormalizedValueEx(HScheme scheme, int scaledValue);
 };
 
 #define VGUI_SCHEME_INTERFACE_VERSION "VGUI_Scheme009"

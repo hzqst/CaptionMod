@@ -2,8 +2,8 @@
 #include "BaseUI.h"
 #include <VGUI\IScheme.h>
 #include <VGUI\ILocalize.h>
+#include <VGUI\ISurface.h>
 #include <VGUI\IInput.h>
-#include "SurfaceHook.h"
 #include "FontTextureCache.h"
 #include <IEngineSurface.h>
 #include "vgui_internal.h"
@@ -50,6 +50,8 @@ IBaseUI *baseuifuncs;
 IGameUIFuncs *gameuifuncs;
 
 extern vgui::ISurface *g_pSurface;
+extern vgui::ISchemeManager *g_pScheme;
+extern IKeyValuesSystem *g_pKeyValuesSystem;
 extern IEngineSurface *staticSurface;
 
 static BOOL s_LoadingClientFactory = false;
@@ -67,10 +69,20 @@ void CBaseUI::Initialize(CreateInterfaceFn *factories, int count)
 
 	s_LoadingClientFactory = false;
 
-	g_pSurface = (ISurface *)factories[0](VGUI_SURFACE_INTERFACE_VERSION, NULL);
+	HINTERFACEMODULE hVGUI2 = (HINTERFACEMODULE)GetModuleHandle("vgui2.dll");
+	if(hVGUI2)
+	{
+		CreateInterfaceFn fnVGUI2CreateInterface = Sys_GetFactory(hVGUI2);
+		g_pScheme = (vgui::ISchemeManager *)fnVGUI2CreateInterface(VGUI_SCHEME_INTERFACE_VERSION, NULL);
+		g_pKeyValuesSystem = (IKeyValuesSystem *)fnVGUI2CreateInterface(KEYVALUESSYSTEM_INTERFACE_VERSION, NULL);
+	}
+
+	g_pSurface = (vgui::ISurface *)factories[0](VGUI_SURFACE_INTERFACE_VERSION, NULL);
 	staticSurface = (IEngineSurface *)factories[0](ENGINE_SURFACE_VERSION, NULL);
 
+	KeyValuesSystem_InstallHook();
 	Surface_InstallHook();
+	Scheme_InstallHook();
 }
 
 void CBaseUI::Start(struct cl_enginefuncs_s *engineFuncs, int interfaceVersion)

@@ -8,10 +8,7 @@ using namespace vgui;
 
 static CSurface s_Surface;
 
-CSurface *Surface()
-{
-	return &s_Surface;
-}
+vgui::CSurface *g_pVGuiSurface = &s_Surface;
 
 CSurface::CSurface()
 {
@@ -453,7 +450,7 @@ HFont CSurface::CreateFont( void )
 //-----------------------------------------------------------------------------
 // Purpose: adds glyphs to a font created by CreateFont()
 //-----------------------------------------------------------------------------
-bool CSurface::SetFontGlyphSet( HFont font, const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags )
+bool CSurface::AddGlyphSetToFont( HFont font, const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags )
 {
 	return g_pSurface->AddGlyphSetToFont( font, windowsFontName, tall, weight, blur, scanlines, flags, 0x0, 0xFFFF );
 }

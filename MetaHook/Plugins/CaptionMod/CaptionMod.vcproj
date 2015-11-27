@@ -186,6 +186,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\BaseUI.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\BaseUI.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ClientVGUI.cpp"
 				>
 			</File>
@@ -378,10 +386,6 @@
 			Name="SourceSDK"
 			>
 			<File
-				RelativePath=".\SourceSDK\Border.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\SourceSDK\Color.h"
 				>
 			</File>
@@ -411,18 +415,6 @@
 			</File>
 			<File
 				RelativePath=".\SourceSDK\OfflineMode.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SourceSDK\Scheme.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SourceSDK\Surface.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SourceSDK\VPanel.cpp"
 				>
 			</File>
 			<File
@@ -1418,11 +1410,37 @@
 			Name="VGUIFont"
 			>
 			<File
-				RelativePath=".\BaseUI.cpp"
+				RelativePath=".\Bitmap.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\BaseUI.h"
+				RelativePath=".\Bitmap.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Border.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\Border.h"
 				>
 			</File>
 			<File
@@ -1450,7 +1468,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\surfacehook.cpp"
+				RelativePath=".\Scheme.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -1472,11 +1490,63 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\surfacehook.h"
+				RelativePath=".\SourceSDK\SchemeHook.cpp"
 				>
 			</File>
 			<File
+				RelativePath=".\SourceSDK\Surface.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SurfaceHook.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath=".\vgui_internal.h"
+				>
+			</File>
+			<File
+				RelativePath=".\VPanel.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\SourceSDK\VPanelWrapper.cpp"
 				>
 			</File>
 			<File

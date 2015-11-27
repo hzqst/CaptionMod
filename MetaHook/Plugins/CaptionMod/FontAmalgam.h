@@ -23,6 +23,7 @@ public:
 	const char *GetFontName(int i);
 	int GetCount(void);
 	bool GetUnderlined(void);
+	bool GetOutlined(void);
 
 public:
 	struct TFontRange

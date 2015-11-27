@@ -6,23 +6,19 @@
 #include "plugins.h"
 
 vgui::IInput *g_pVGuiInput;
-vgui::ISchemeManager *g_pVGuiSchemeManager;
-vgui::CSurface *g_pVGuiSurface;
 vgui::ISystem *g_pVGuiSystem;
 vgui::IVGui *g_pVGui;
 vgui::IPanel *g_pVGuiPanel;
 vgui::ILocalize *g_pVGuiLocalize;
 
 vgui::ISurface *g_pSurface;
+vgui::ISchemeManager *g_pScheme;
 
 IFileSystem *g_pFullFileSystem;
 IKeyValuesSystem *g_pKeyValuesSystem;
 vgui::IEngineVGui *g_pEngineVGui;
 
 IEngineSurface *staticSurface;
-
-void KeyValuesSystem_InstallHook(void);
-void Surface_InstallHook(void);
 
 namespace vgui
 {
@@ -41,13 +37,7 @@ bool VGui_InitInterfacesList(const char *moduleName, CreateInterfaceFn *factoryL
 
 	g_pFullFileSystem = (IFileSystem *)factoryList[2](FILESYSTEM_INTERFACE_VERSION, NULL);
 
-	g_pKeyValuesSystem = (IKeyValuesSystem *)factoryList[1](KEYVALUESSYSTEM_INTERFACE_VERSION, NULL);
-
 	g_pVGuiInput = (IInput *)factoryList[1](VGUI_INPUT_INTERFACE_VERSION, NULL);
-	g_pVGuiSchemeManager = (ISchemeManager *)factoryList[1](VGUI_SCHEME_INTERFACE_VERSION, NULL);
-//	g_pVGuiSurface = (ISurface *)factoryList[0](VGUI_SURFACE_INTERFACE_VERSION, NULL);
-	g_pVGuiSurface = Surface();
-	g_pSurface = (ISurface *)factoryList[0](VGUI_SURFACE_INTERFACE_VERSION, NULL);
 	g_pVGuiSystem = (ISystem *)factoryList[1](VGUI_SYSTEM_INTERFACE_VERSION, NULL);
 	g_pVGui = (IVGui *)factoryList[1](VGUI_IVGUI_INTERFACE_VERSION, NULL);
 	g_pVGuiPanel = (IPanel *)factoryList[1](VGUI_PANEL_INTERFACE_VERSION, NULL);
@@ -55,14 +45,11 @@ bool VGui_InitInterfacesList(const char *moduleName, CreateInterfaceFn *factoryL
 
 	g_pEngineVGui = (IEngineVGui *)factoryList[0](VENGINE_VGUI_VERSION, NULL);
 
-	if (!g_pFullFileSystem || !g_pKeyValuesSystem || !g_pVGuiInput || !g_pVGuiSchemeManager || 
-		!g_pSurface || !g_pVGuiSystem || !g_pVGui || !g_pVGuiPanel || !g_pVGuiLocalize)
+	if (!g_pFullFileSystem || !g_pKeyValuesSystem || !g_pVGuiInput || !g_pVGuiSystem || !g_pVGui || !g_pVGuiPanel || !g_pVGuiLocalize)
 	{
 		Warning("vgui_controls is missing a required interface!\n");
 		return false;
 	}
-
-	KeyValuesSystem_InstallHook();
 
 	return true;
 }

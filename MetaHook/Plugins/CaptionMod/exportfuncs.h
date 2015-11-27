@@ -15,7 +15,7 @@
 #include <usercmd.h>
 #include "enginedef.h"
 
-#define CAPTION_MOD_VERSION "Caption Mod 3.0"
+#define CAPTION_MOD_VERSION "Caption Mod 3.1"
 
 extern cl_enginefunc_t gEngfuncs;
 
@@ -30,6 +30,9 @@ void Engine_InstallHook(void);
 void BaseUI_InstallHook(void);
 void GameUI_InstallHook(void);
 void ClientVGUI_InstallHook(void);
+void Surface_InstallHook(void);
+void Scheme_InstallHook(void);
+void KeyValuesSystem_InstallHook(void);
 FARPROC WINAPI NewGetProcAddress(HMODULE hModule, LPCSTR lpProcName);
 void *NewClientFactory(void);
 void S_StartDynamicSound(int entnum, int entchannel, sfx_t *sfx, float *origin, float fvol, float attenuation, int flags, int pitch);

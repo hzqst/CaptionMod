@@ -73,6 +73,35 @@ CDictionary *CViewport::FindDictionary(const char *szValue)
 	return item->dict;
 }
 
+CDictionary *CViewport::FindDictionary(const char *szValue, dict_t Type)
+{
+	int hash = 0;
+	hash_item_t *item;
+	int count;
+
+	hash = CaseInsensitiveHash(szValue, m_StringsHashTable.Count());
+	count = m_StringsHashTable.Count();
+	item = &m_StringsHashTable[hash];
+
+	while (item->dict)
+	{
+		if (!Q_strcmp(item->dict->m_szTitle, szValue) && item->dict->m_Type == Type)
+			break;
+
+		hash = (hash + 1) % count;
+		item = &m_StringsHashTable[hash];
+	}
+
+	if (!item->dict)
+	{
+		item->lastHash = NULL;
+		return NULL;
+	}
+
+	m_StringsHashTable[hash].lastHash = item;
+	return item->dict;
+}
+
 int CViewport::CaseInsensitiveHash(const char *string, int iBounds)
 {
 	unsigned int hash = 0;
@@ -309,6 +338,12 @@ void CDictionary::Load(CSV::CSVDocument::row_type &row, Color &defaultColor, ISc
 		m_Type = DICT_SOUND;
 	}
 
+	//2015-11-26 added to support !SENTENCE and #SENTENCE
+	if(title[0] == '!' || title[0] == '#')
+	{
+		m_Type = DICT_SENTENCE;
+	}
+
 	//If it's a textmessage found in engine (gamedir/titles.txt)
 	client_textmessage_t *textmsg = gEngfuncs.pfnTextMessageGet(title);
 	if(textmsg)
@@ -345,6 +380,8 @@ void CDictionary::Load(CSV::CSVDocument::row_type &row, Color &defaultColor, ISc
 	{
 		m_bKeyReplaced = true;
 	}
+
+	ReplaceReturn();
 
 	const char *color = row[2].c_str();
 	if(color[0])
@@ -667,6 +704,45 @@ void CDictionary::ReplaceKey(void)
 		WideCharToMultiByte(CP_UTF8, 0, &m_szSentence[0], -1, utf8Text, utf8Length, NULL, NULL);
 		utf8Text[utf8Length] = '\0';
 		m_pTextMessage->pMessage = utf8Text;
+	}
+}
+
+//2015-11-27 added
+//Purpose: replace all "\r" "\n" to '\r' '\n'
+void CDictionary::ReplaceReturn(void)
+{
+	wchar_t *p = &m_szSentence[0];
+
+	wchar_t *pBackSlash = NULL;
+
+	//empty sentence?
+	if(!p[0])
+		return;
+
+	//make sure we have at least two characters
+	while(*p && *(p + 1))
+	{
+		if(*p == L'\\')
+		{
+			int bMove = false;
+			if(*(p + 1) == L'r')
+			{
+				*p = L'\r';
+				bMove = true;
+			}
+			else if(*(p + 1) == L'n')
+			{
+				*p = L'\n';
+				bMove = true;
+			}
+			if(bMove)
+			{
+				int nCharsToMove = Q_wcslen(p + 2);
+				memcpy(p + 1, p + 2, (nCharsToMove + 1) * sizeof(wchar_t));
+			}
+		}
+
+		p ++;
 	}
 }
 

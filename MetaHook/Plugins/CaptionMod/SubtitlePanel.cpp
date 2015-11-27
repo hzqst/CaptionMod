@@ -320,6 +320,7 @@ void SubtitlePanel::AddLine(CDictionary *Dict, wchar_t *wszSentence, int nLength
 	Line->m_TextAlign = Dict->m_iTextAlign ? Dict->m_iTextAlign : m_iTextAlign;
 }
 
+//2015-11-26 added htimescale for SubtitlePanel
 void SubtitlePanel::StartSubtitle(CDictionary *Dict, float flStartTime)
 {
 	//Delay the current line till the last backline plays
@@ -357,7 +358,7 @@ void SubtitlePanel::StartSubtitle(CDictionary *Dict, float flStartTime)
 	nAddedCharNum = 0;
 	nTotalCharNum = 0;
 
-	//Count the number of chars, skip line-breaks
+	//Count the number of chars, skip CRLF
 	while(*p++)
 	{
 		if(*p != '\r' && *p != '\n')
@@ -376,6 +377,9 @@ void SubtitlePanel::StartSubtitle(CDictionary *Dict, float flStartTime)
 
 	if(flDuration <= 0)
 		flDuration = 4.0f;
+
+	if(m_flHoldTimeScale > 0)
+		flDuration *= m_flHoldTimeScale;
 
 	p = pStart;
 
@@ -435,21 +439,32 @@ void SubtitlePanel::StartSubtitle(CDictionary *Dict, float flStartTime)
 		float flPercentDuration = (float)nCharNum / nTotalCharNum;
 		float flPercentStart = (float)(nAddedCharNum - nCharNum) / nTotalCharNum;
 
+		//Calculate the StartTime
+		float flCalcStartTime = flPercentStart * flDuration;
 		float flRealStartTime;
-
 		if(m_flStartTimeScale <= 0)
 			flRealStartTime = flStartTime;
 		else
-			flRealStartTime = flStartTime + flPercentStart * flDuration * m_flStartTimeScale;
-
+			flRealStartTime = flStartTime + flCalcStartTime * m_flStartTimeScale;
+		//Shall we wait for the latest backlines played?
 		if(m_iWaitPlay)
 			flRealStartTime = max(flRealStartTime, flLatestStart);
 
-		AddLine(Dict, pStart, nCharNum, flRealStartTime, flDuration * flPercentDuration, nWide);
+		//Calculate the Duration
+		float flCalcDuration = flDuration * flPercentDuration;
+		float flRealDuration;
+		
+		//longer start time won't change the duration
+		if(m_flStartTimeScale >= 1)
+			flRealDuration = flCalcDuration;
+		else//real duration = original starttime - real starttime + original duration
+			flRealDuration = max(flStartTime + flCalcStartTime - flRealStartTime, 0) + flCalcDuration;
+
+		AddLine(Dict, pStart, nCharNum, flRealStartTime, flRealDuration, nWide);
 
 		while(1)
 		{
-			//skip line-break if any
+			//skip CRLF
 			if(*p == L'\r' || *p == L'\n')
 				p ++;
 

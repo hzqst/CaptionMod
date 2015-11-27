@@ -5,7 +5,6 @@
 #include "Color.h"
 #include "vgui_internal.h"
 #include "plugins.h"
-#include "tier1/utlvector.h"
 #include "tier1/utlrbtree.h"
 #include "tier1/UtlDict.h"
 #include "engfuncs.h"
@@ -322,6 +321,21 @@ void CSurfaceProxy::DrawUnicodeChar(wchar_t wch)
 		return;
 
 	g_pSurface->DrawSetTexture(textureID);
+
+	if(FontManager().GetFontOutlined(g_hCurrentFont))
+	{
+		int OutlineColor = (g_iCurrentTextR <= 10 && g_iCurrentTextG <= 10 && g_iCurrentTextB <= 10) ? 255 : 0;
+		g_pfnDrawSetTextColor(this, 0, OutlineColor, OutlineColor, OutlineColor, g_iCurrentTextA);
+		for(int i = -1;i <= 1; i += 1)
+		{
+			for(int j = -1;j <= 1; j += 1)
+			{
+				if(i != 0 && j != 0)
+					staticSurface->drawPrintChar(x+i, y+j, rgbaWide, rgbaTall, texCoords[0], texCoords[1], texCoords[2], texCoords[3]);
+			}
+		}
+	}
+
 	g_pfnDrawSetTextColor(this, 0, g_iCurrentTextR, g_iCurrentTextG, g_iCurrentTextB, g_iCurrentTextA);
 	staticSurface->drawPrintChar(x, y, rgbaWide, rgbaTall, texCoords[0], texCoords[1], texCoords[2], texCoords[3]);
 	g_pfnDrawSetTextColor(this, 0, g_iCurrentTextR, g_iCurrentTextG, g_iCurrentTextB, g_iCurrentTextA);
@@ -359,6 +373,21 @@ void CSurfaceProxy::DrawUnicodeCharAdd(wchar_t wch)
 		return;
 
 	g_pSurface->DrawSetTexture(textureID);
+
+	if(FontManager().GetFontOutlined(g_hCurrentFont))
+	{
+		int OutlineColor = (g_iCurrentTextR <= 10 && g_iCurrentTextG <= 10 && g_iCurrentTextB <= 10) ? 255 : 0;
+		g_pfnDrawSetTextColor(this, 0, OutlineColor, OutlineColor, OutlineColor, g_iCurrentTextA);
+		for(int i = -1;i <= 1; i ++)
+		{
+			for(int j = -1;j <= 1; j ++)
+			{
+				if(i != 0 && j != 0)
+					staticSurface->drawPrintCharAdd(x+i, y+j, rgbaWide, rgbaTall, texCoords[0], texCoords[1], texCoords[2], texCoords[3]);
+			}
+		}
+	}
+
 	g_pfnDrawSetTextColor(this, 0, g_iCurrentTextR, g_iCurrentTextG, g_iCurrentTextB, g_iCurrentTextA);
 	staticSurface->drawPrintCharAdd(x, y, rgbaWide, rgbaTall, texCoords[0], texCoords[1], texCoords[2], texCoords[3]);
 	g_pfnDrawSetTextColor(this, 0, g_iCurrentTextR, g_iCurrentTextG, g_iCurrentTextB, g_iCurrentTextA);
