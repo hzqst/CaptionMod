@@ -4,7 +4,7 @@ This is a caption/subtitle plugin for GoldSRC mod using VGUI2.
 
 Mainly for displaying captions/subtitles in singleplayer games.
 
-#It could display captions/subtitles when :
+###It could display captions/subtitles when :
   sound or sentence is played,
 
   HudText message is displayed,
