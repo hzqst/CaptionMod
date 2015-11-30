@@ -1,4 +1,4 @@
-# CaptionMod 3.1
+# CaptionMod 3.2
 This is a caption/subtitle plugin for GoldSRC mod using VGUI2.
 Mainly for displaying captions/subtitles in singleplayer games.
 
@@ -15,6 +15,10 @@ Compiler:
   Visual Studio 2005 (msvc8)
   
 changelog:
+
+2015-11-28
+
+修复了高分辨率下字幕面板不会缩放的bug
 
 2015-11-27
 
