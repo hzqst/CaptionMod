@@ -15,6 +15,8 @@ DWORD g_dwEngineBuildnum;
 DWORD g_iVideoMode;
 int g_iVideoWidth, g_iVideoHeight, g_iBPP;
 bool g_bWindowed;
+bool g_bIsUseSteam;
+bool g_bIsRunningSteam;
 
 extern IFileSystem *g_pFullFileSystem;
 
@@ -46,6 +48,7 @@ void IPlugins::LoadEngine(void)
 	g_dwEngineBase = g_pMetaHookAPI->GetEngineBase();
 	g_dwEngineSize = g_pMetaHookAPI->GetEngineSize();
 
+	Steam_Init();
 	Engine_FillAddress();
 	BaseUI_InstallHook();
 

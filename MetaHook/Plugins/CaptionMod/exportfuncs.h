@@ -15,10 +15,12 @@
 #include <usercmd.h>
 #include "enginedef.h"
 
-#define CAPTION_MOD_VERSION "Caption Mod 3.1"
+#define CAPTION_MOD_VERSION "Caption Mod 3.2"
 
 extern cl_enginefunc_t gEngfuncs;
 
+void Steam_Init(void);
+void SteamAPI_Load(void);
 void MSG_Init(void);
 int Initialize(struct cl_enginefuncs_s *pEnginefuncs, int iVersion);
 void HUD_Init(void);
@@ -33,6 +35,7 @@ void ClientVGUI_InstallHook(void);
 void Surface_InstallHook(void);
 void Scheme_InstallHook(void);
 void KeyValuesSystem_InstallHook(void);
+void Sys_GetRegKeyValueUnderRoot(const char *pszSubKey, const char *pszElement, char *pszReturnString, int nReturnLength, const char *pszDefaultValue);
 FARPROC WINAPI NewGetProcAddress(HMODULE hModule, LPCSTR lpProcName);
 void *NewClientFactory(void);
 void S_StartDynamicSound(int entnum, int entchannel, sfx_t *sfx, float *origin, float fvol, float attenuation, int flags, int pitch);

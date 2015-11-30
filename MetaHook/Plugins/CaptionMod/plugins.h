@@ -8,5 +8,6 @@ extern bool g_bWindowed;
 extern IFileSystem *g_pFileSystem;
 extern HMODULE g_hThisModule, g_hEngineModule;
 extern bool g_bIsUseSteam;
+extern bool g_bIsRunningSteam;
 extern HMODULE g_hClientDll;
 extern BOOL g_IsClientVGUI2;

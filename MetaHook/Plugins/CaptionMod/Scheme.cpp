@@ -14,6 +14,9 @@
 #include "Bitmap.h"
 #include "KeyValues.h"
 
+//language
+#include "engfuncs.h"
+
 using namespace vgui;
 
 #define FONT_ALIAS_NAME_LENGTH 64
@@ -929,7 +932,7 @@ const char *CScheme::LookupSchemeSetting(const char *pchSetting)
 
 int CScheme::GetMinimumFontHeightForCurrentLanguage(void)
 {
-	char *language = "";//;
+	char *language = gCapFuncs.szLanguage;
 
 	if (IsPC())
 	{

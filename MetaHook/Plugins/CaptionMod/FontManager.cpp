@@ -16,11 +16,6 @@ CFontManager::CFontManager(void)
 	m_FontAmalgams.EnsureCapacity(100);
 	m_FontAmalgams.AddToTail();
 	m_Win32Fonts.EnsureCapacity(100);
-
-	setlocale(LC_CTYPE, "");
-	setlocale(LC_TIME, "");
-	setlocale(LC_COLLATE, "");
-	setlocale(LC_MONETARY, "");
 }
 
 CFontManager::~CFontManager(void)

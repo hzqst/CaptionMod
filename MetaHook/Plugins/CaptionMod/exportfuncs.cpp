@@ -1,9 +1,11 @@
 #include <metahook.h>
 #include "exportfuncs.h"
 #include "engfuncs.h"
-#include "msghook.h"
 
-//viewport
+//Steam API
+#include "steam_api.h"
+
+//Viewport
 #include <VGUI/VGUI.h>
 #include "Viewport.h"
 
@@ -240,4 +242,35 @@ FARPROC WINAPI NewGetProcAddress(HMODULE hModule, LPCSTR lpProcName)
 		return (FARPROC)Sys_GetFactoryThis();
 	}
 	return gCapFuncs.GetProcAddress(hModule, lpProcName);
+}
+
+void Steam_Init(void)
+{
+	g_bIsUseSteam = CommandLine()->CheckParm("-steam") != NULL;
+
+	SteamAPI_Load();
+
+	gCapFuncs.szLanguage[0] = '\0';
+
+	if(g_bIsUseSteam && SteamAPI_Init())
+	{
+		g_bIsRunningSteam = SteamAPI_IsSteamRunning();
+		
+		if (g_bIsRunningSteam)
+		{
+			ISteamApps *Apps = SteamApps();
+			if(Apps)
+			{
+				const char *pszLanguage = SteamApps()->GetCurrentGameLanguage();
+
+				if (pszLanguage)
+					Q_strncpy(gCapFuncs.szLanguage, pszLanguage, sizeof(gCapFuncs.szLanguage));
+			}
+		}
+	}
+
+	if(!gCapFuncs.szLanguage[0])
+	{
+		Sys_GetRegKeyValueUnderRoot("Software\\Valve\\Steam", "Language", gCapFuncs.szLanguage, sizeof(gCapFuncs.szLanguage), "english");
+	}
 }

@@ -31,6 +31,7 @@ typedef struct
 	FARPROC (WINAPI *GetProcAddress)(HMODULE hModule, LPCSTR lpProcName);
 	double *pcl_time;
 	double *pcl_oldtime;
+	char szLanguage[32];
 }cap_funcs_t;
 
 #define cl_time (*gCapFuncs.pcl_time)
