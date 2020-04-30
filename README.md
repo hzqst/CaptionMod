@@ -4,9 +4,9 @@ This is a caption/subtitle plugin designed for displaying captions/subtitles in 
 
 ## It could display captions/subtitles when :
 
-sound or sentence is played,
+  sound or sentence is played,
 
-  HudText message is displayed,
+  HudText or HudTextPro (Counter Strike 1.6 or Condition Zero) is displayed,
 
 # Compile Requirement:
 
