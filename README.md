@@ -1,4 +1,4 @@
-# CaptionMod 3.2
+# CaptionMod 3.3
 
 This is a caption/subtitle plugin designed for displaying captions/subtitles in GoldSRC engine & VGUI2 based singleplayer games.
 
