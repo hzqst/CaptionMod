@@ -9,7 +9,9 @@ sound or sentence is played,
   HudText message is displayed,
 
 # Compile Requirement:
+
   MetaHook (https://github.com/Nagist/metahook)
+  
   Visual Studio 2005 (msvc8) or higher
   
 # changelog:
