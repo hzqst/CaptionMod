@@ -18,13 +18,14 @@ This is a caption/subtitle plugin designed for displaying captions/subtitles in 
 
 git clone https://github.com/Nagist/metahook
 
-put the CaptionMod folder in MetaHook\Plugins\CaptionMod
+put the CaptionMod folder in `MetaHook\Plugins\CaptionMod`
 
 the dir looks like
 
 MetaHook&#92;<br/>&emsp;Plugins&#92;<br/>&emsp;&emsp;CaptionMod&#92;<br/>&emsp;&emsp;&emsp;CaptionMod.sln<br/>
     
-Open CaptionMod.sln with msvc and build it.
+Open CaptionMod.sln with MSVC and build it.
+
 If no error occurs, output binary should be at `MetaHook\Plugins\CaptionMod\Release\CaptionMod.dll`
   
 # changelog:
