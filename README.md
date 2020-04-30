@@ -1,21 +1,18 @@
 # CaptionMod 3.2
 
-This is a caption/subtitle plugin for GoldSRC mod using VGUI2.
+This is a caption/subtitle plugin designed for displaying captions/subtitles in GoldSRC engine & VGUI2 based singleplayer games.
 
-Mainly for displaying captions/subtitles in singleplayer games.
+## It could display captions/subtitles when :
 
-###It could display captions/subtitles when :
-  sound or sentence is played,
+sound or sentence is played,
 
   HudText message is displayed,
 
-  some other caption is displayed.
-
-#Requirement:
+# Compile Requirement:
   MetaHook (https://github.com/Nagist/metahook)
-#Compiler:
-  Visual Studio 2005 (msvc8)
-#changelog:
+  Visual Studio 2005 (msvc8) or higher
+  
+# changelog:
 
 2015-11-28
 
