@@ -420,13 +420,13 @@ DBG_INTERFACE bool DoNewAssertDialog( const tchar *pFilename, int line, const tc
 
 	if ( !ThreadInMainThread() )
 	{
-		int result = MessageBox( NULL,  pExpression, "Assertion Failed", MB_SYSTEMMODAL | MB_CANCELTRYCONTINUE );
+		int result = MessageBox( NULL,  pExpression, "Assertion Failed", MB_SYSTEMMODAL | 0x00000006L);
 
 		if ( result == IDCANCEL )
 		{
 			IgnoreAssertsNearby( 0 );
 		}
-		else if ( result == IDCONTINUE )
+		else if ( result == 11)
 		{
 			g_bBreak = true;
 		}

@@ -27,6 +27,7 @@ typedef PTHREAD_START_ROUTINE LPTHREAD_START_ROUTINE;
 typedef void *LPVOID;
 #define max(a,b)  (((a) > (b)) ? (a) : (b))
 #endif
+#include <memory>
 #include <memory.h>
 #include "threadtools.h"
 #include "vcrmode.h"
@@ -1682,7 +1683,7 @@ unsigned __stdcall CThread::ThreadProc(LPVOID pv)
 #ifdef _LINUX
   ThreadInit_t *pInit = (ThreadInit_t *)pv;
 #else
-  std::auto_ptr<ThreadInit_t> pInit((ThreadInit_t *)pv);
+  std::shared_ptr<ThreadInit_t> pInit((ThreadInit_t *)pv);
 #endif
   
 #ifdef _X360
