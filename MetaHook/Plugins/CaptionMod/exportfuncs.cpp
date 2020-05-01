@@ -14,6 +14,11 @@ cl_enginefunc_t gEngfuncs;
 cvar_t *al_enable = NULL;
 cvar_t *cap_show = NULL;
 
+void *NewClientFactory(void)
+{
+	return Sys_GetFactoryThis();
+}
+
 int Initialize(struct cl_enginefuncs_s *pEnginefuncs, int iVersion)
 {
 	memcpy(&gEngfuncs, pEnginefuncs, sizeof(gEngfuncs));
@@ -230,16 +235,25 @@ sfx_t *S_FindName(char *name, int *pfInCache)
 	return sfx;
 }
 
-void *NewClientFactory(void)
+IBaseInterface *NewCreateInterface(const char *pName, int *pReturnCode)
 {
-	return Sys_GetFactoryThis();
+	MessageBoxA(NULL, pName, "NewCreateInterface", 0);
+
+	auto fnCreateInterface = (decltype(NewCreateInterface) *)Sys_GetFactoryThis();
+	auto fn = fnCreateInterface(pName, pReturnCode);
+	if (fn)
+		return fn;
+
+	fnCreateInterface = (decltype(NewCreateInterface) *)gCapFuncs.GetProcAddress(g_hClientDll, CREATEINTERFACE_PROCNAME);
+	fn = fnCreateInterface(pName, pReturnCode);
+	return fn;
 }
 
 FARPROC WINAPI NewGetProcAddress(HMODULE hModule, LPCSTR lpProcName)
 {
 	if(hModule == g_hClientDll && (DWORD)lpProcName > 0xFFFF && !strcmp(lpProcName, CREATEINTERFACE_PROCNAME))
 	{
-		return (FARPROC)Sys_GetFactoryThis();
+		return (FARPROC)NewCreateInterface;
 	}
 	return gCapFuncs.GetProcAddress(hModule, lpProcName);
 }

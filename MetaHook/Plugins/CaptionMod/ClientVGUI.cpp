@@ -98,7 +98,7 @@ void ClientVGUI_InstallHook(void)
 {
 	CreateInterfaceFn ClientVGUICreateInterface = NULL;
 	if(g_hClientDll)
-		ClientVGUICreateInterface = (CreateInterfaceFn)gCapFuncs.GetProcAddress(g_hClientDll, CREATEINTERFACE_PROCNAME);
+		ClientVGUICreateInterface = (CreateInterfaceFn)GetProcAddress(g_hClientDll, CREATEINTERFACE_PROCNAME);
 	if(!ClientVGUICreateInterface)
 		ClientVGUICreateInterface = (CreateInterfaceFn)gExportfuncs.ClientFactory();
 
@@ -114,7 +114,7 @@ void ClientVGUI_InstallHook(void)
 		g_pMetaHookAPI->VFTHook(g_pClientVGUI, 0,  7, (void *)pVFTable[7], (void *&)m_pfnCClientVGUI_ActivateClientUI);
 		g_pMetaHookAPI->VFTHook(g_pClientVGUI, 0,  8, (void *)pVFTable[8], (void *&)m_pfnCClientVGUI_HideClientUI);
 
-		g_IsClientVGUI2 = true;
+		g_IsClientVGUI2 = true;			
 	}
 }
 
@@ -135,6 +135,8 @@ public:
 
 void NewClientVGUI::Initialize(CreateInterfaceFn *factories, int count)
 {
+	MessageBoxA(NULL, "NewClientVGUI::Initialize", "", 0);
+
 	vgui::VGui_InitInterfacesList("CaptionMod", factories, count);
 
 	vgui::scheme()->LoadSchemeFromFile( "captionmod/CaptionScheme.res", "CaptionScheme" );
