@@ -1,4 +1,4 @@
-# CaptionMod 3.3
+# CaptionMod 3.4
 
 This is a caption/subtitle plugin designed for displaying captions/subtitles in GoldSRC engine & VGUI2 based singleplayer games.
 
@@ -29,6 +29,14 @@ Open CaptionMod.sln with MSVC and build it.
 If no error occurs, output binary should be at `MetaHook\Plugins\CaptionMod\Release\CaptionMod.dll`
   
 # changelog:
+
+2020-05-01
+
+fix a bug when Blue Shift can not get vgui interface and crash.
+
+2020-04-30
+
+fix for engine 8383.
 
 2015-11-28
 
