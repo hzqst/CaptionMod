@@ -12,7 +12,7 @@ This is a caption/subtitle plugin designed for displaying captions/subtitles in 
 
   MetaHook (https://github.com/Nagist/metahook)
   
-  Visual Studio 2005 (msvc8) or higher
+  Visual Studio 2017 or higher
   
 # Build
 
