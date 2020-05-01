@@ -408,9 +408,9 @@ void SubtitlePanel::StartSubtitle(CDictionary *Dict, float flStartTime)
 				szBuf[nCharNum] = L'\0';
 			}
 			//number don't break at half...
-			else if((*p >= L'0' && *p <= L'9') || *p == L':' || *p == L'-')
+			else if((*p >= L'0' && *p <= L'9') || *p == L':' || *p == L'-' || *p == L'\'')
 			{
-				while((*p >= L'0' && *p <= L'9') || *p == L':' || *p == L'-')
+				while((*p >= L'0' && *p <= L'9') || *p == L':' || *p == L'-' || *p == L'\'')
 					szBuf[nCharNum++] = *p++;
 				szBuf[nCharNum] = L'\0';
 			}
