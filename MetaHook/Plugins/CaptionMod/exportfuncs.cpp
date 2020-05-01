@@ -237,8 +237,6 @@ sfx_t *S_FindName(char *name, int *pfInCache)
 
 IBaseInterface *NewCreateInterface(const char *pName, int *pReturnCode)
 {
-	MessageBoxA(NULL, pName, "NewCreateInterface", 0);
-
 	auto fnCreateInterface = (decltype(NewCreateInterface) *)Sys_GetFactoryThis();
 	auto fn = fnCreateInterface(pName, pReturnCode);
 	if (fn)

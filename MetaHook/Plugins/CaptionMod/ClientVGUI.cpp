@@ -135,8 +135,6 @@ public:
 
 void NewClientVGUI::Initialize(CreateInterfaceFn *factories, int count)
 {
-	MessageBoxA(NULL, "NewClientVGUI::Initialize", "", 0);
-
 	vgui::VGui_InitInterfacesList("CaptionMod", factories, count);
 
 	vgui::scheme()->LoadSchemeFromFile( "captionmod/CaptionScheme.res", "CaptionScheme" );
