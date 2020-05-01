@@ -34,6 +34,8 @@ If no error occurs, output binary should be at `MetaHook\Plugins\CaptionMod\Rele
 
 fix a bug when Blue Shift can not get vgui interface and crash.
 
+fix issue #4
+
 2020-04-30
 
 fix for engine 8383.
