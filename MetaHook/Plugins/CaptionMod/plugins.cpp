@@ -65,6 +65,8 @@ void IPlugins::LoadClient(cl_exportfuncs_t *pExportFunc)
 
 	g_hClientDll = GetModuleHandle("client.dll");
 
+	gCapFuncs.GetProcAddress = GetProcAddress;
+
 	//Try installing hook to interface VClientVGUI001
 	ClientVGUI_InstallHook();
 

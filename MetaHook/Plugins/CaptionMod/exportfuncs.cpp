@@ -140,7 +140,7 @@ void S_StartSentence(const char *name)
 {
 	CDictionary *Dict = g_pViewPort->FindDictionary(name, DICT_SENTENCE);	
 
-	if(!Dict)
+	if(!Dict && (name[0] == '!' || name[0] == '#'))
 	{
 		//skip ! and # then search again
 		Dict = g_pViewPort->FindDictionary(name + 1);
@@ -237,6 +237,8 @@ sfx_t *S_FindName(char *name, int *pfInCache)
 
 IBaseInterface *NewCreateInterface(const char *pName, int *pReturnCode)
 {
+	//MessageBoxA(NULL, pName, "NewCreateInterface", 0);
+
 	auto fnCreateInterface = (decltype(NewCreateInterface) *)Sys_GetFactoryThis();
 	auto fn = fnCreateInterface(pName, pReturnCode);
 	if (fn)
@@ -244,13 +246,17 @@ IBaseInterface *NewCreateInterface(const char *pName, int *pReturnCode)
 
 	fnCreateInterface = (decltype(NewCreateInterface) *)gCapFuncs.GetProcAddress(g_hClientDll, CREATEINTERFACE_PROCNAME);
 	fn = fnCreateInterface(pName, pReturnCode);
-	return fn;
+	if (fn)
+		return fn;
+
+	return NULL;
 }
 
 FARPROC WINAPI NewGetProcAddress(HMODULE hModule, LPCSTR lpProcName)
 {
 	if(hModule == g_hClientDll && (DWORD)lpProcName > 0xFFFF && !strcmp(lpProcName, CREATEINTERFACE_PROCNAME))
 	{
+		//MessageBoxA(NULL, lpProcName, "NewGetProcAddress", 0);
 		return (FARPROC)NewCreateInterface;
 	}
 	return gCapFuncs.GetProcAddress(hModule, lpProcName);

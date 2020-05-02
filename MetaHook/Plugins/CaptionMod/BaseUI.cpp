@@ -150,8 +150,6 @@ void BaseUI_InstallHook(void)
 		Sig_NotFound(ClientFactory);
 	gCapFuncs.pfnClientFactory = (void *(**)(void))*(DWORD *)(addr + 2);
 
-	//g_pMetaHookAPI->InlineHook((void *)GetProcAddress, NewGetProcAddress, (void *&)gCapFuncs.GetProcAddress);
-
 	DWORD *pVFTable = *(DWORD **)&s_BaseUI;
 
 	g_pMetaHookAPI->VFTHook(baseuifuncs, 0, 1, (void *)pVFTable[1], (void *&)m_pfnCBaseUI_Initialize);

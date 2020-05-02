@@ -329,9 +329,16 @@ void SubtitlePanel::StartSubtitle(CDictionary *Dict, float flStartTime)
 	float flLatestStart = 0;
 	for(int i = 0; i < m_BackLines.Count(); ++i)
 	{
-		if(m_BackLines[i]->m_StartTime > flLatestStart)
-			flLatestStart = m_BackLines[i]->m_StartTime;
+		if (m_iWaitPlay)
+		{
+			m_BackLines[i]->m_StartTime = 0;
+		}
+		else
+		{
+			if (m_BackLines[i]->m_StartTime > flLatestStart)
+				flLatestStart = m_BackLines[i]->m_StartTime;
 
+		}
 		//Already in list, do not start one subtitle for twice at the same time.
 		if(m_BackLines[i]->m_Dict == Dict)
 			return;
@@ -345,7 +352,7 @@ void SubtitlePanel::StartSubtitle(CDictionary *Dict, float flStartTime)
 	int iPanelWidth = GetWide();
 	int iMaxTextWidth = iPanelWidth - (m_iScaledXSpace << 1);
 
-	wchar_t szBuf[1024];
+	wchar_t szBuf[4096];
 	wchar_t *pStart = &Dict->m_szSentence[0];
 	wchar_t *p = pStart;
 
@@ -408,9 +415,9 @@ void SubtitlePanel::StartSubtitle(CDictionary *Dict, float flStartTime)
 				szBuf[nCharNum] = L'\0';
 			}
 			//number don't break at half...
-			else if((*p >= L'0' && *p <= L'9') || *p == L':' || *p == L'-' || *p == L'\'')
+			else if((*p >= L'0' && *p <= L'9') || *p == L':' || *p == L'-' || *p == L'\'' || *p == L'"')
 			{
-				while((*p >= L'0' && *p <= L'9') || *p == L':' || *p == L'-' || *p == L'\'')
+				while((*p >= L'0' && *p <= L'9') || *p == L':' || *p == L'-' || *p == L'\'' || *p == L'"')
 					szBuf[nCharNum++] = *p++;
 				szBuf[nCharNum] = L'\0';
 			}

@@ -88,7 +88,6 @@ public:
 	void ActivateClientUI(void);
 	void HideClientUI(void);
 	void LoadDictionary(void);
-	void ReplaceKey(CDictionary *dict);
 
 	//Subtitle Interface
 	void StartSubtitle(CDictionary *dict);

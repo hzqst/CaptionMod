@@ -40,6 +40,8 @@ void Sys_ErrorEx(const char *fmt, ...);
 
 void CClientVGUI::Initialize(CreateInterfaceFn *factories, int count)
 {
+	//MessageBoxA(NULL, "CClientVGUI::Initialize", "", 0);
+
 	m_pfnCClientVGUI_Initialize(this, 0, factories, count);
 
 	vgui::VGui_InitInterfacesList("CaptionMod", factories, count);
@@ -94,11 +96,13 @@ void CClientVGUI::HideClientUI(void)
 	g_pViewPort->HideClientUI();
 }
 
+FARPROC WINAPI NewGetProcAddress(HMODULE hModule, LPCSTR lpProcName);
+
 void ClientVGUI_InstallHook(void)
 {
 	CreateInterfaceFn ClientVGUICreateInterface = NULL;
 	if(g_hClientDll)
-		ClientVGUICreateInterface = (CreateInterfaceFn)GetProcAddress(g_hClientDll, CREATEINTERFACE_PROCNAME);
+		ClientVGUICreateInterface = (CreateInterfaceFn)gCapFuncs.GetProcAddress(g_hClientDll, CREATEINTERFACE_PROCNAME);
 	if(!ClientVGUICreateInterface)
 		ClientVGUICreateInterface = (CreateInterfaceFn)gExportfuncs.ClientFactory();
 
@@ -115,6 +119,10 @@ void ClientVGUI_InstallHook(void)
 		g_pMetaHookAPI->VFTHook(g_pClientVGUI, 0,  8, (void *)pVFTable[8], (void *&)m_pfnCClientVGUI_HideClientUI);
 
 		g_IsClientVGUI2 = true;			
+	}
+	else
+	{
+		g_pMetaHookAPI->InlineHook(gCapFuncs.GetProcAddress, NewGetProcAddress, (void *&)gCapFuncs.GetProcAddress);
 	}
 }
 
@@ -135,6 +143,8 @@ public:
 
 void NewClientVGUI::Initialize(CreateInterfaceFn *factories, int count)
 {
+	//MessageBoxA(NULL, "NewClientVGUI::Initialize", "", 0);
+
 	vgui::VGui_InitInterfacesList("CaptionMod", factories, count);
 
 	vgui::scheme()->LoadSchemeFromFile( "captionmod/CaptionScheme.res", "CaptionScheme" );

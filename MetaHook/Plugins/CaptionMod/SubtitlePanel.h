@@ -138,9 +138,7 @@ public://Subtitle interface
 	void StartNextSubtitle(CDictionary *Dict);
 	void AddLine(CDictionary *Dict, wchar_t *wszSentence, int nLength, float flStartTime, float flDuration, int nTextLength);
 	void StartLine(CSubLine *Line);
-	void RetireLine(CSubLine *Line);
 	void ClearSubtitle(void);
-	void AddPrefix(CDictionary *dict);
 
 protected:
 	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);

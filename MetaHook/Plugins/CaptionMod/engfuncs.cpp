@@ -79,13 +79,13 @@ void Engine_FillAddress(void)
 
 void Engine_InstallHook(void)
 {
-	InstallHook(S_FindName);
-	InstallHook(S_StartDynamicSound);
-	InstallHook(S_StartStaticSound);
-
 	DWORD addr = (DWORD)g_pMetaHookAPI->SearchPattern((void *)g_pMetaSave->pEngineFuncs->GetClientTime, 0x20, "\xDD\x05", Sig_Length("\xDD\x05"));
 	if(!addr)
 		Sig_NotFound("cl_time");
 	gCapFuncs.pcl_time = (double *)*(DWORD *)(addr + 2);
 	gCapFuncs.pcl_oldtime = gCapFuncs.pcl_time + 1;
+
+	InstallHook(S_FindName);
+	InstallHook(S_StartDynamicSound);
+	InstallHook(S_StartStaticSound);
 }

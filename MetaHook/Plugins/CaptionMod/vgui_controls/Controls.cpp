@@ -20,6 +20,8 @@ vgui::IEngineVGui *g_pEngineVGui;
 
 IEngineSurface *staticSurface;
 
+void Sys_ErrorEx(const char *fmt, ...);
+
 namespace vgui
 {
 
@@ -47,7 +49,7 @@ bool VGui_InitInterfacesList(const char *moduleName, CreateInterfaceFn *factoryL
 
 	if (!g_pFullFileSystem || !g_pKeyValuesSystem || !g_pVGuiInput || !g_pVGuiSystem || !g_pVGui || !g_pVGuiPanel || !g_pVGuiLocalize)
 	{
-		Warning("vgui_controls is missing a required interface!\n");
+		Sys_ErrorEx("vgui_controls is missing a required interface!\n");
 		return false;
 	}
 
