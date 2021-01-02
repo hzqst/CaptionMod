@@ -14,7 +14,7 @@ HudText or HudTextPro (Counter Strike 1.6 or Condition Zero) is displayed.
 
   MetaHook (https://github.com/Nagist/metahook)
   
-  Visual Studio 2017 or higher
+  Visual Studio 2017
   
 # Build Instruction
 
