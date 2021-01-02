@@ -2,11 +2,13 @@
 
 This is a caption/subtitle plugin designed for displaying captions/subtitles in GoldSRC engine & VGUI2 based singleplayer games.
 
-## It could display captions/subtitles when :
+It could display captions/subtitles when:
 
-  sound or sentence is played,
+sound is played.
 
-  HudText or HudTextPro (Counter Strike 1.6 or Condition Zero) is displayed,
+sentence is played.
+
+HudText or HudTextPro (Counter Strike 1.6 or Condition Zero) is displayed.
 
 # Compile Requirement:
 
@@ -14,7 +16,7 @@ This is a caption/subtitle plugin designed for displaying captions/subtitles in 
   
   Visual Studio 2017 or higher
   
-# Build
+# Build Instruction
 
 git clone https://github.com/Nagist/metahook
 
