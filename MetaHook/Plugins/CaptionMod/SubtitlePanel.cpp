@@ -410,7 +410,7 @@ void SubtitlePanel::StartSubtitle(CDictionary *Dict, float flStartTime)
 			//English word don't break at half...
 			if((*p >= L'A' && *p <= L'Z') || (*p >= L'a' && *p <= L'z'))
 			{
-				while((*p >= L'A' && *p <= L'Z') || (*p >= L'a' && *p <= L'z'))
+				while((*p >= L'A' && *p <= L'Z') || (*p >= L'a' && *p <= L'z') || *p == L'.' || *p == L',' || *p == L'\'' || *p == L'"' || *p == L'-')
 					szBuf[nCharNum++] = *p++;
 				szBuf[nCharNum] = L'\0';
 			}
@@ -427,18 +427,20 @@ void SubtitlePanel::StartSubtitle(CDictionary *Dict, float flStartTime)
 				szBuf[nCharNum] = L'\0';
 			}
 			surface()->GetTextSize(m_hTextFont, szBuf, nWide, nTall);
-			//Force to be a new line
-			if( *p == L'\0' || *p == L'\n' || *p == L'\r')
-			{
-				nAddedCharNum += nCharNum;
-				break;
-			}
+
 			//It's out of range? go back to last position and make it a new line
 			if(nWide > iMaxTextWidth)
 			{
 				nWide = nLastWide;
 				nCharNum = nLastCharNum;
 				p = LastP;
+				nAddedCharNum += nCharNum;
+				break;
+			}
+
+			//Force to be a new line
+			if (*p == L'\0' || *p == L'\n' || *p == L'\r')
+			{
 				nAddedCharNum += nCharNum;
 				break;
 			}
@@ -471,15 +473,11 @@ void SubtitlePanel::StartSubtitle(CDictionary *Dict, float flStartTime)
 
 		AddLine(Dict, pStart, nCharNum, flRealStartTime, flRealDuration, nWide);
 
-		while(1)
-		{
-			//skip CRLF
-			if(*p == L'\r' || *p == L'\n')
-				p ++;
+		//skip CRLF
+		while (*p == L'\r' || *p == L'\n')
+			p++;
 
-			pStart = p;
-			break;
-		}
+		pStart = p;
 	}
 }
 

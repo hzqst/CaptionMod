@@ -15,7 +15,7 @@
 #include <usercmd.h>
 #include "enginedef.h"
 
-#define CAPTION_MOD_VERSION "Caption Mod 3.4"
+#define CAPTION_MOD_VERSION "Caption Mod 3.5"
 
 extern cl_enginefunc_t gEngfuncs;
 
