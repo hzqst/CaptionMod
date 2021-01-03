@@ -1,16 +1,16 @@
-# CaptionMod 3.4
+# CaptionMod 3.5
 
 This is a caption/subtitle plugin designed for displaying captions/subtitles in GoldSRC engine & VGUI2 based singleplayer games.
 
 It could display captions/subtitles when:
 
-sound is played.
+1. Sound (wav only, not mp3) is played.
 
-sentence is played.
+2. Sentence is played.
 
-HudText or HudTextPro (Counter Strike 1.6 or Condition Zero) is displayed.
+3. HudText or HudTextPro (Counter Strike 1.6 or Condition Zero) is displayed.
 
-# Compile Requirement:
+# Build Requirement:
 
   MetaHook (https://github.com/Nagist/metahook)
   
@@ -18,18 +18,26 @@ HudText or HudTextPro (Counter Strike 1.6 or Condition Zero) is displayed.
   
 # Build Instruction
 
-git clone https://github.com/Nagist/metahook
+1. git clone https://github.com/Nagist/metahook
 
-put the CaptionMod folder in `MetaHook\Plugins\CaptionMod`
-
-the dir looks like
+2. Put the CaptionMod folder in `MetaHook\Plugins\CaptionMod` , the dir should looks like
 
 MetaHook&#92;<br/>&emsp;Plugins&#92;<br/>&emsp;&emsp;CaptionMod&#92;<br/>&emsp;&emsp;&emsp;CaptionMod.sln<br/>
     
-Open CaptionMod.sln with MSVC and build it.
+4. Open CaptionMod.sln with MSVC and build it with Release config.
 
-If no error occurs, output binary should be at `MetaHook\Plugins\CaptionMod\Release\CaptionMod.dll`
-  
+If no error occurs, output binary will be at `MetaHook\Plugins\CaptionMod\Release\CaptionMod.dll`
+
+# Installation (for those who don't have or don't want to build the binary for themself)
+
+1. Download zip or git clone https://github.com/hzqst/CaptionMod
+
+2. Run CaptionMod3.3_installer.exe and install.
+
+3. Cpy `Binary\CaptionMod.dll` to `steamapps\common\Half-Life\(your_game_name)\metahook\plugins\` and overwrite it.
+
+4. Launch game from `steamapps\common\Half-Life\metahook.exe -game (your_game_name)`
+
 # Usage Instruction
 
 ### console var: cap_show 0 / 1
@@ -186,6 +194,10 @@ see Macri Type
 '''
  
 # changelog:
+
+2021-01-03
+
+fix issue #7
 
 2020-05-01
 
