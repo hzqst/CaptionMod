@@ -34,7 +34,7 @@ If no error occurs, output binary will be at `MetaHook\Plugins\CaptionMod\Releas
 
 2. Run CaptionMod3.3_installer.exe and install.
 
-3. Cpy `Binary\CaptionMod.dll` to `steamapps\common\Half-Life\(your_game_name)\metahook\plugins\` and overwrite it.
+3. Copy `Binary\CaptionMod.dll` to `steamapps\common\Half-Life\(your_game_name)\metahook\plugins\` and overwrite it.
 
 4. Launch game from `steamapps\common\Half-Life\metahook.exe -game (your_game_name)`
 
@@ -95,6 +95,7 @@ Support MS Excel XLS files and XLSX files. xlsx has the
 ## 1.Play a wave file.
 
 Once the game plays a .wav file, it will scan the dictionary with the sound path (without sound/ prefix),
+
 The subtitle will display if an entry was found in the dictionary.
 
 ## 2.By playing SENTENCE
@@ -167,7 +168,7 @@ available value: alphafade / leftscan (Case-Insensitive)
 
 ## Detail about macro.csv(.xls .xlsx)
 
-### Macri Type:
+### Macro Type:
 
 regex: this is a perl regular expression that replace the untranslated Sentence (before transfered by VGUI Localization language files and after the Fill macros is executed) to the Destination Text with Source RegEx.
 
@@ -179,11 +180,11 @@ Used to identify a macro.
 
 ### Source RegEx:
 
-see Macri Type
+see Macro Type
 
 ### Destination Text:
 
-see Macri Type
+see Macro Type
 
 ### How to use a macro? add these in cell which is not in a sentence row.
 '''
