@@ -186,13 +186,16 @@ see Macro Type
 
 see Macro Type
 
-### How to use a macro? add these in cell which is not in a sentence row.
-'''
+### How to use a macro? 
+
+add these in cell which is not in a sentence row.
+
+```
 @use MacroName //to enable a macro
 @end MacroName //to disable an active macro
 @end //to disable the last activated macro
 @endall //to disable all active macros.
-'''
+```
  
 # changelog:
 
@@ -202,14 +205,14 @@ fix issue #7
 
 2020-05-01
 
-fix a bug when Blue Shift crash.
+fix : Blue Shift crash.
 
 fix issue #4
 
 2020-04-30
 
-fix for engine 8383.
+fix : engine 8383 crash.
 
 2015-11-28
 
-fix a bug that subtitle panel don't scale in high resolution.
+fix : subtitle panel don't scale in high resolution.
