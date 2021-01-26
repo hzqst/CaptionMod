@@ -13,6 +13,7 @@ cl_enginefunc_t gEngfuncs;
 
 cvar_t *al_enable = NULL;
 cvar_t *cap_show = NULL;
+cvar_t* cap_enabled = NULL;
 
 void *NewClientFactory(void)
 {
@@ -50,6 +51,7 @@ void HUD_Init(void)
 
 	al_enable = gEngfuncs.pfnGetCvarPointer("al_enable");
 	cap_show = gEngfuncs.pfnRegisterVariable("cap_show", "0", FCVAR_CLIENTDLL);
+	cap_enabled = gEngfuncs.pfnRegisterVariable("cap_enabled", "1", FCVAR_CLIENTDLL);
 	gEngfuncs.pfnAddCommand("cap_version", Cap_Version_f);
 }
 
