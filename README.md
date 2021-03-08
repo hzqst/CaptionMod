@@ -1,16 +1,16 @@
-# CaptionMod 3.4
+# CaptionMod 3.5
 
 This is a caption/subtitle plugin designed for displaying captions/subtitles in GoldSRC engine & VGUI2 based singleplayer games.
 
 It could display captions/subtitles when:
 
-sound is played.
+1. Sound (wav only, not mp3) is played.
 
-sentence is played.
+2. Sentence is played.
 
-HudText or HudTextPro (Counter Strike 1.6 or Condition Zero) is displayed.
+3. HudText or HudTextPro (Counter Strike 1.6 or Condition Zero) is displayed.
 
-# Compile Requirement:
+# Build Requirement:
 
   MetaHook (https://github.com/Nagist/metahook)
   
@@ -18,19 +18,31 @@ HudText or HudTextPro (Counter Strike 1.6 or Condition Zero) is displayed.
   
 # Build Instruction
 
-git clone https://github.com/Nagist/metahook
+1. git clone https://github.com/Nagist/metahook
 
-put the CaptionMod folder in `MetaHook\Plugins\CaptionMod`
-
-the dir looks like
+2. Put the CaptionMod folder in `MetaHook\Plugins\CaptionMod` , the dir should looks like
 
 MetaHook&#92;<br/>&emsp;Plugins&#92;<br/>&emsp;&emsp;CaptionMod&#92;<br/>&emsp;&emsp;&emsp;CaptionMod.sln<br/>
     
-Open CaptionMod.sln with MSVC and build it.
+4. Open CaptionMod.sln with MSVC and build it with Release config.
 
-If no error occurs, output binary should be at `MetaHook\Plugins\CaptionMod\Release\CaptionMod.dll`
-  
+If no error occurs, output binary will be at `MetaHook\Plugins\CaptionMod\Release\CaptionMod.dll`
+
+# Installation (for those who don't have or don't want to build the binary for themself)
+
+1. Download zip or git clone https://github.com/hzqst/CaptionMod
+
+2. Run CaptionMod3.3_installer.exe and install.
+
+3. Copy `Binary\CaptionMod.dll` to `steamapps\common\Half-Life\(your_game_name)\metahook\plugins\` and overwrite it.
+
+4. Launch game from `steamapps\common\Half-Life\metahook.exe -game (your_game_name)`
+
 # Usage Instruction
+
+### console var: cap_enabled 0 / 1
+
+When set to 0, captions will be disabled. Otherwise, captions will be enabled.
 
 ### console var: cap_show 0 / 1
 
@@ -43,10 +55,6 @@ To check current version of this plugin.
 ### console command: cap_reload
 
 Reload the dictionary file
-
-### console command: cap_configs
-
-Open a dialog to modify the configurations
 
 ## Files Usage
 
@@ -76,17 +84,18 @@ Textures of panel's round cornor.
 
 Localization files, for multi-language support.
 
-### gamedir/captionmod/dictionary.csv (.xls .xlsx)
+### gamedir/captionmod/dictionary.csv
 
 Dictionary file, encoded in ANSI or local system encoding.
 
-Support MS Excel XLS files and XLSX files. xlsx has the
+It is not recommended to put any non-ANSI characters in dictionary file.
 
 # You can trigger the subtitle in three ways:
 
 ## 1.Play a wave file.
 
 Once the game plays a .wav file, it will scan the dictionary with the sound path (without sound/ prefix),
+
 The subtitle will display if an entry was found in the dictionary.
 
 ## 2.By playing SENTENCE
@@ -156,47 +165,23 @@ Text alignment for subtitle text and the way how this sentence fade in?
 available value: L / C / R (Case-Insensitive)
 
 available value: alphafade / leftscan (Case-Insensitive)
-
-## Detail about macro.csv(.xls .xlsx)
-
-### Macri Type:
-
-regex: this is a perl regular expression that replace the untranslated Sentence (before transfered by VGUI Localization language files and after the Fill macros is executed) to the Destination Text with Source RegEx.
-
-fill: fill this line with Destination Text, no matter what this source sentence is.
-
-### Macro Name:
-
-Used to identify a macro.
-
-### Source RegEx:
-
-see Macri Type
-
-### Destination Text:
-
-see Macri Type
-
-### How to use a macro? add these in cell which is not in a sentence row.
-'''
-@use MacroName //to enable a macro
-@end MacroName //to disable an active macro
-@end //to disable the last activated macro
-@endall //to disable all active macros.
-'''
  
 # changelog:
 
+2021-01-03
+
+fix issue #7
+
 2020-05-01
 
-fix a bug when Blue Shift crash.
+fix : Blue Shift crash.
 
 fix issue #4
 
 2020-04-30
 
-fix for engine 8383.
+fix : engine 8383 crash.
 
 2015-11-28
 
-fix a bug that subtitle panel don't scale in high resolution.
+fix : subtitle panel don't scale in high resolution.

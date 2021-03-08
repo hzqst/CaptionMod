@@ -11,15 +11,16 @@
 
 cl_enginefunc_t gEngfuncs;
 
-cvar_t *al_enable = NULL;
-cvar_t *cap_show = NULL;
+cvar_t* al_enable = NULL;
+cvar_t* cap_show = NULL;
+cvar_t* cap_enabled = NULL;
 
-void *NewClientFactory(void)
+void* NewClientFactory(void)
 {
 	return Sys_GetFactoryThis();
 }
 
-int Initialize(struct cl_enginefuncs_s *pEnginefuncs, int iVersion)
+int Initialize(struct cl_enginefuncs_s* pEnginefuncs, int iVersion)
 {
 	memcpy(&gEngfuncs, pEnginefuncs, sizeof(gEngfuncs));
 
@@ -50,34 +51,35 @@ void HUD_Init(void)
 
 	al_enable = gEngfuncs.pfnGetCvarPointer("al_enable");
 	cap_show = gEngfuncs.pfnRegisterVariable("cap_show", "0", FCVAR_CLIENTDLL);
+	cap_enabled = gEngfuncs.pfnRegisterVariable("cap_enabled", "1", FCVAR_CLIENTDLL);
 	gEngfuncs.pfnAddCommand("cap_version", Cap_Version_f);
 }
 
-static CDictionary *m_SentenceDictionary = NULL;
+static CDictionary* m_SentenceDictionary = NULL;
 static qboolean m_bSentenceSound = false;
 static float m_flSentenceDuration = 0;
 
-float S_GetDuration(sfx_t *sfx)
+float S_GetDuration(sfx_t* sfx)
 {
 	float flDuration = 0;
 
-	if(sfx->name[0] != '*' && sfx->name[0] != '?')
+	if (sfx->name[0] != '*' && sfx->name[0] != '?')
 	{
 		//MetaAudio is active? use MetaAudio's structs
-		if(al_enable && al_enable->value)
+		if (al_enable && al_enable->value)
 		{
-			aud_sfxcache_t *asc = (aud_sfxcache_t *)gCapFuncs.S_LoadSound(sfx, NULL);
+			aud_sfxcache_t* asc = (aud_sfxcache_t*)gCapFuncs.S_LoadSound(sfx, NULL);
 			//not a voice sound
-			if(asc && asc->length != 0x40000000)
+			if (asc && asc->length != 0x40000000)
 			{
 				flDuration = (float)asc->length / asc->speed;
 			}
 		}
 		else
 		{
-			sfxcache_t *sc = gCapFuncs.S_LoadSound(sfx, NULL);
+			sfxcache_t* sc = gCapFuncs.S_LoadSound(sfx, NULL);
 			//not a voice sound
-			if(sc && sc->length != 0x40000000)
+			if (sc && sc->length != 0x40000000)
 			{
 				flDuration = (float)sc->length / sc->speed;
 			}
@@ -87,48 +89,48 @@ float S_GetDuration(sfx_t *sfx)
 }
 
 //2015-11-26 added, support added up the duration of sound for zero-duration sentences
-void S_StartWave(sfx_t *sfx)
+void S_StartWave(sfx_t* sfx)
 {
-	const char *name = sfx->name;
+	const char* name = sfx->name;
 
-	if(!Q_strnicmp(name, "sound/", 6))
+	if (!Q_strnicmp(name, "sound/", 6))
 		name += 6;
-	else if(!Q_strnicmp(name + 1, "sound/", 6))
+	else if (!Q_strnicmp(name + 1, "sound/", 6))
 		name += 7;
 
-	if(m_bSentenceSound && m_SentenceDictionary)
+	if (m_bSentenceSound && m_SentenceDictionary)
 	{
-		if(m_SentenceDictionary->m_flDuration <= 0)
+		if (m_SentenceDictionary->m_flDuration <= 0)
 		{
 			float flDuration = S_GetDuration(sfx);
-			if(flDuration > 0)
+			if (flDuration > 0)
 			{
 				m_flSentenceDuration += flDuration;
 			}
 		}
 	}
 
-	CDictionary *Dict = g_pViewPort->FindDictionary(name, DICT_SOUND);
+	CDictionary* Dict = g_pViewPort->FindDictionary(name, DICT_SOUND);
 
-	if(cap_show && cap_show->value)
+	if (cap_show && cap_show->value)
 	{
 		gEngfuncs.Con_Printf((Dict) ? "CaptionMod: Sound [%s] found.\n" : "CaptionMod: Sound [%s] not found.\n", name);
 	}
 
-	if(!Dict)
+	if (!Dict)
 		return;
 
 	//Get duration for zero-duration
-	if(Dict->m_flDuration <= 0)
+	if (Dict->m_flDuration <= 0)
 	{
 		float flDuration = S_GetDuration(sfx);
-		if(flDuration > 0)
+		if (flDuration > 0)
 		{
 			Dict->m_flDuration = flDuration;
 		}
 	}
 
-	if(Dict->m_flDuration > 0)
+	if (Dict->m_flDuration > 0)
 	{
 		m_flSentenceDuration += Dict->m_flDuration;
 	}
@@ -136,17 +138,17 @@ void S_StartWave(sfx_t *sfx)
 	g_pViewPort->StartSubtitle(Dict);
 }
 
-void S_StartSentence(const char *name)
+void S_StartSentence(const char* name)
 {
-	CDictionary *Dict = g_pViewPort->FindDictionary(name, DICT_SENTENCE);	
+	CDictionary* Dict = g_pViewPort->FindDictionary(name, DICT_SENTENCE);
 
-	if(!Dict && (name[0] == '!' || name[0] == '#'))
+	if (!Dict && (name[0] == '!' || name[0] == '#'))
 	{
 		//skip ! and # then search again
 		Dict = g_pViewPort->FindDictionary(name + 1);
 	}
 
-	if(cap_show && cap_show->value)
+	if (cap_show && cap_show->value)
 	{
 		gEngfuncs.Con_Printf((Dict) ? "CaptionMod: SENTENCE [%s] found.\n" : "CaptionMod: SENTENCE [%s] not found.\n", name);
 	}
@@ -157,11 +159,11 @@ void S_StartSentence(const char *name)
 //2015-11-26 fixed, to support !SENTENCE and #SENTENCE
 void S_EndSentence(void)
 {
-	if(!m_SentenceDictionary)
+	if (!m_SentenceDictionary)
 		return;
 
 	//use the total duration we added up before
-	if(m_SentenceDictionary->m_flDuration <= 0 && m_flSentenceDuration > 0)
+	if (m_SentenceDictionary->m_flDuration <= 0 && m_flSentenceDuration > 0)
 	{
 		m_SentenceDictionary->m_flDuration = m_flSentenceDuration;
 	}
@@ -171,11 +173,11 @@ void S_EndSentence(void)
 
 //2015-11-26 fixed, to support !SENTENCE and #SENTENCE
 //2015-11-26 added, support added up the duration of sound for zero-duration sentences
-void S_StartDynamicSound(int entnum, int entchannel, sfx_t *sfx, float *origin, float fvol, float attenuation, int flags, int pitch)
+void S_StartDynamicSound(int entnum, int entchannel, sfx_t* sfx, float* origin, float fvol, float attenuation, int flags, int pitch)
 {
-	if(sfx)
+	if (sfx)
 	{
-		if(sfx->name[0] == '!' || sfx->name[0] == '#')
+		if (sfx->name[0] == '!' || sfx->name[0] == '#')
 		{
 			m_bSentenceSound = true;
 			m_flSentenceDuration = 0;
@@ -189,7 +191,7 @@ void S_StartDynamicSound(int entnum, int entchannel, sfx_t *sfx, float *origin, 
 
 	gCapFuncs.S_StartDynamicSound(entnum, entchannel, sfx, origin, fvol, attenuation, flags, pitch);
 
-	if(m_bSentenceSound)
+	if (m_bSentenceSound)
 	{
 		S_EndSentence();
 		m_flSentenceDuration = 0;
@@ -199,11 +201,11 @@ void S_StartDynamicSound(int entnum, int entchannel, sfx_t *sfx, float *origin, 
 
 //2015-11-26 fixed, to support !SENTENCE and #SENTENCE
 //2015-11-26 added, support added up the duration of sound for zero-duration sentences
-void S_StartStaticSound(int entnum, int entchannel, sfx_t *sfx, float *origin, float fvol, float attenuation, int flags, int pitch)
+void S_StartStaticSound(int entnum, int entchannel, sfx_t* sfx, float* origin, float fvol, float attenuation, int flags, int pitch)
 {
-	if(sfx)
+	if (sfx)
 	{
-		if(sfx->name[0] == '!' || sfx->name[0] == '#')
+		if (sfx->name[0] == '!' || sfx->name[0] == '#')
 		{
 			m_bSentenceSound = true;
 			m_flSentenceDuration = 0;
@@ -217,7 +219,7 @@ void S_StartStaticSound(int entnum, int entchannel, sfx_t *sfx, float *origin, f
 
 	gCapFuncs.S_StartStaticSound(entnum, entchannel, sfx, origin, fvol, attenuation, flags, pitch);
 
-	if(m_bSentenceSound)
+	if (m_bSentenceSound)
 	{
 		S_EndSentence();
 		m_flSentenceDuration = 0;
@@ -225,28 +227,28 @@ void S_StartStaticSound(int entnum, int entchannel, sfx_t *sfx, float *origin, f
 	}
 }
 
-sfx_t *S_FindName(char *name, int *pfInCache)
+sfx_t* S_FindName(char* name, int* pfInCache)
 {
-	sfx_t *sfx = gCapFuncs.S_FindName(name, pfInCache);;
+	sfx_t* sfx = gCapFuncs.S_FindName(name, pfInCache);;
 
 	//we should add
-	if(m_bSentenceSound && sfx)
+	if (m_bSentenceSound && sfx)
 	{
 		S_StartWave(sfx);
 	}
 	return sfx;
 }
 
-IBaseInterface *NewCreateInterface(const char *pName, int *pReturnCode)
+IBaseInterface* NewCreateInterface(const char* pName, int* pReturnCode)
 {
 	//MessageBoxA(NULL, pName, "NewCreateInterface", 0);
 
-	auto fnCreateInterface = (decltype(NewCreateInterface) *)Sys_GetFactoryThis();
+	auto fnCreateInterface = (decltype(NewCreateInterface)*)Sys_GetFactoryThis();
 	auto fn = fnCreateInterface(pName, pReturnCode);
 	if (fn)
 		return fn;
 
-	fnCreateInterface = (decltype(NewCreateInterface) *)gCapFuncs.GetProcAddress(g_hClientDll, CREATEINTERFACE_PROCNAME);
+	fnCreateInterface = (decltype(NewCreateInterface)*)gCapFuncs.GetProcAddress(g_hClientDll, CREATEINTERFACE_PROCNAME);
 	fn = fnCreateInterface(pName, pReturnCode);
 	if (fn)
 		return fn;
@@ -256,7 +258,7 @@ IBaseInterface *NewCreateInterface(const char *pName, int *pReturnCode)
 
 FARPROC WINAPI NewGetProcAddress(HMODULE hModule, LPCSTR lpProcName)
 {
-	if(hModule == g_hClientDll && (DWORD)lpProcName > 0xFFFF && !strcmp(lpProcName, CREATEINTERFACE_PROCNAME))
+	if (hModule == g_hClientDll && (DWORD)lpProcName > 0xFFFF && !strcmp(lpProcName, CREATEINTERFACE_PROCNAME))
 	{
 		//MessageBoxA(NULL, lpProcName, "NewGetProcAddress", 0);
 		return (FARPROC)NewCreateInterface;
@@ -272,16 +274,16 @@ void Steam_Init(void)
 
 	gCapFuncs.szLanguage[0] = '\0';
 
-	if(g_bIsUseSteam && SteamAPI_Init())
+	if (g_bIsUseSteam && SteamAPI_Init())
 	{
 		g_bIsRunningSteam = SteamAPI_IsSteamRunning();
-		
+
 		if (g_bIsRunningSteam)
 		{
-			ISteamApps *Apps = SteamApps();
-			if(Apps)
+			ISteamApps* Apps = SteamApps();
+			if (Apps)
 			{
-				const char *pszLanguage = SteamApps()->GetCurrentGameLanguage();
+				const char* pszLanguage = SteamApps()->GetCurrentGameLanguage();
 
 				if (pszLanguage)
 					Q_strncpy(gCapFuncs.szLanguage, pszLanguage, sizeof(gCapFuncs.szLanguage));
@@ -289,7 +291,7 @@ void Steam_Init(void)
 		}
 	}
 
-	if(!gCapFuncs.szLanguage[0])
+	if (!gCapFuncs.szLanguage[0])
 	{
 		Sys_GetRegKeyValueUnderRoot("Software\\Valve\\Steam", "Language", gCapFuncs.szLanguage, sizeof(gCapFuncs.szLanguage), "english");
 	}

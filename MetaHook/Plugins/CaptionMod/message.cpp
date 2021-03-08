@@ -19,25 +19,25 @@ pfnUserMsgHook m_pfnHudText;
 pfnUserMsgHook m_pfnHudTextPro;
 pfnUserMsgHook m_pfnHudTextArgs;
 
-int __MsgFunc_HudText(const char *pszName, int iSize, void *pbuf)
+int __MsgFunc_HudText(const char* pszName, int iSize, void* pbuf)
 {
-	if(m_HudMessage.MsgFunc_HudText(pszName, iSize, pbuf) != 0)
+	if (m_HudMessage.MsgFunc_HudText(pszName, iSize, pbuf) != 0)
 		return 1;
 
 	return m_pfnHudText(pszName, iSize, pbuf);
 }
 
-int __MsgFunc_HudTextPro(const char *pszName, int iSize, void *pbuf)
+int __MsgFunc_HudTextPro(const char* pszName, int iSize, void* pbuf)
 {
-	if(m_HudMessage.MsgFunc_HudText(pszName, iSize, pbuf) != 0)
+	if (m_HudMessage.MsgFunc_HudText(pszName, iSize, pbuf) != 0)
 		return 1;
 
 	return m_pfnHudTextPro(pszName, iSize, pbuf);
 }
 
-int __MsgFunc_HudTextArgs(const char *pszName, int iSize, void *pbuf)
+int __MsgFunc_HudTextArgs(const char* pszName, int iSize, void* pbuf)
 {
-	if(m_HudMessage.MsgFunc_HudTextArgs(pszName, iSize, pbuf) != 0)
+	if (m_HudMessage.MsgFunc_HudTextArgs(pszName, iSize, pbuf) != 0)
 		return 1;
 
 	return m_pfnHudTextArgs(pszName, iSize, pbuf);
@@ -59,20 +59,20 @@ void CHudMessage::Reset(void)
 int CHudMessage::VidInit(void)
 {
 	//Load EngineFont
-	IScheme *pScheme = scheme()->GetIScheme(scheme()->GetScheme("CaptionScheme"));
-	if(pScheme)
+	IScheme* pScheme = scheme()->GetIScheme(scheme()->GetScheme("CaptionScheme"));
+	if (pScheme)
 	{
 		m_hFont = pScheme->GetFont("Legacy_CreditsFont", true);
-		if(!m_hFont)
+		if (!m_hFont)
 			m_hFont = pScheme->GetFont("CreditsFont", true);
 	}
 	else
 	{
 		pScheme = scheme()->GetIScheme(scheme()->GetDefaultScheme());
-		if(pScheme)
+		if (pScheme)
 		{
 			m_hFont = pScheme->GetFont("Legacy_CreditsFont", true);
-			if(!m_hFont)
+			if (!m_hFont)
 				m_hFont = pScheme->GetFont("CreditsFont", true);
 		}
 	}
@@ -167,49 +167,49 @@ void CHudMessage::MessageScanNextChar(unsigned int m_hFont)
 
 	switch (m_parms.pMessage->effect)
 	{
-		case 0:
-		case 1:
+	case 0:
+	case 1:
+	{
+		destRed = destGreen = destBlue = 0;
+		blend = m_parms.fadeBlend;
+		break;
+	}
+
+	case 2:
+	{
+		m_parms.charTime += m_parms.pMessage->fadein;
+
+		if (m_parms.charTime > m_parms.time)
 		{
+			srcRed = srcGreen = srcBlue = 0;
 			destRed = destGreen = destBlue = 0;
-			blend = m_parms.fadeBlend;
-			break;
+			blend = 0;
 		}
-
-		case 2:
+		else
 		{
-			m_parms.charTime += m_parms.pMessage->fadein;
+			float deltaTime = m_parms.time - m_parms.charTime;
 
-			if (m_parms.charTime > m_parms.time)
+			destRed = destGreen = destBlue = 0;
+
+			if (m_parms.time > m_parms.fadeTime)
 			{
-				srcRed = srcGreen = srcBlue = 0;
-				destRed = destGreen = destBlue = 0;
+				blend = m_parms.fadeBlend;
+			}
+			else if (deltaTime > m_parms.pMessage->fxtime)
+			{
 				blend = 0;
 			}
 			else
 			{
-				float deltaTime = m_parms.time - m_parms.charTime;
-
-				destRed = destGreen = destBlue = 0;
-
-				if (m_parms.time > m_parms.fadeTime)
-				{
-					blend = m_parms.fadeBlend;
-				}
-				else if (deltaTime > m_parms.pMessage->fxtime)
-				{
-					blend = 0;
-				}
-				else
-				{
-					destRed = m_parms.pMessage->r2;
-					destGreen = m_parms.pMessage->g2;
-					destBlue = m_parms.pMessage->b2;
-					blend = 255 - (deltaTime * (1.0 / m_parms.pMessage->fxtime) * 255.0 + 0.5);
-				}
+				destRed = m_parms.pMessage->r2;
+				destGreen = m_parms.pMessage->g2;
+				destBlue = m_parms.pMessage->b2;
+				blend = 255 - (deltaTime * (1.0 / m_parms.pMessage->fxtime) * 255.0 + 0.5);
 			}
-
-			break;
 		}
+
+		break;
+	}
 	}
 
 	if (blend > 255)
@@ -232,58 +232,58 @@ void CHudMessage::MessageScanStart(void)
 {
 	switch (m_parms.pMessage->effect)
 	{
-		case 1:
-		case 0:
+	case 1:
+	case 0:
+	{
+		m_parms.fadeTime = m_parms.pMessage->fadein + m_parms.pMessage->holdtime;
+
+		if (m_parms.time < m_parms.pMessage->fadein)
 		{
-			m_parms.fadeTime = m_parms.pMessage->fadein + m_parms.pMessage->holdtime;
-
-			if (m_parms.time < m_parms.pMessage->fadein)
-			{
-				m_parms.fadeBlend = ((m_parms.pMessage->fadein - m_parms.time) * (1.0 / m_parms.pMessage->fadein) * 255);
-			}
-			else if (m_parms.time > m_parms.fadeTime)
-			{
-				if (m_parms.pMessage->fadeout > 0)
-					m_parms.fadeBlend = (((m_parms.time - m_parms.fadeTime) / m_parms.pMessage->fadeout) * 255);
-				else
-					m_parms.fadeBlend = 255;
-			}
-			else
-				m_parms.fadeBlend = 0;
-
-			m_parms.charTime = 0;
-
-			if (m_parms.pMessage->effect == 1 && (rand() % 100) < 10)
-				m_parms.charTime = 1;
-
-			break;
+			m_parms.fadeBlend = ((m_parms.pMessage->fadein - m_parms.time) * (1.0 / m_parms.pMessage->fadein) * 255);
 		}
-
-		case 2:
+		else if (m_parms.time > m_parms.fadeTime)
 		{
-			m_parms.fadeTime = (m_parms.pMessage->fadein * m_parms.length) + m_parms.pMessage->holdtime;
-
-			if (m_parms.time > m_parms.fadeTime && m_parms.pMessage->fadeout > 0)
+			if (m_parms.pMessage->fadeout > 0)
 				m_parms.fadeBlend = (((m_parms.time - m_parms.fadeTime) / m_parms.pMessage->fadeout) * 255);
 			else
-				m_parms.fadeBlend = 0;
-
-			break;
+				m_parms.fadeBlend = 255;
 		}
+		else
+			m_parms.fadeBlend = 0;
+
+		m_parms.charTime = 0;
+
+		if (m_parms.pMessage->effect == 1 && (rand() % 100) < 10)
+			m_parms.charTime = 1;
+
+		break;
+	}
+
+	case 2:
+	{
+		m_parms.fadeTime = (m_parms.pMessage->fadein * m_parms.length) + m_parms.pMessage->holdtime;
+
+		if (m_parms.time > m_parms.fadeTime && m_parms.pMessage->fadeout > 0)
+			m_parms.fadeBlend = (((m_parms.time - m_parms.fadeTime) / m_parms.pMessage->fadeout) * 255);
+		else
+			m_parms.fadeBlend = 0;
+
+		break;
+	}
 	}
 }
 
-void CHudMessage::MessageDrawScan(client_message_t *pClientMessage, float time, unsigned int m_hFont)
+void CHudMessage::MessageDrawScan(client_message_t* pClientMessage, float time, unsigned int m_hFont)
 {
 	int i, j, length, width;
-	wchar_t *pText;
+	wchar_t* pText;
 	wchar_t line[256];
 	wchar_t textBuf[2048];
 	int a, b, c;
 	char szTempMessage[256];
-	client_textmessage_t *pMessage;
+	client_textmessage_t* pMessage;
 	int iMessageLength;
-	wchar_t *pFullText;
+	wchar_t* pFullText;
 
 	pMessage = pClientMessage->pMessage;
 
@@ -408,8 +408,9 @@ void CHudMessage::MessageDrawScan(client_message_t *pClientMessage, float time, 
 
 int CHudMessage::Draw(void)
 {
+
 	int i;
-	client_textmessage_t *pMessage;
+	client_textmessage_t* pMessage;
 	float endTime;
 
 	float fTime = cl_time;
@@ -433,18 +434,18 @@ int CHudMessage::Draw(void)
 
 			switch (pMessage->effect)
 			{
-				case 0:
-				case 1:
-				{
-					endTime = m_startTime[i] + pMessage->fadein + pMessage->fadeout + pMessage->holdtime;
-					break;
-				}
+			case 0:
+			case 1:
+			{
+				endTime = m_startTime[i] + pMessage->fadein + pMessage->fadeout + pMessage->holdtime;
+				break;
+			}
 
-				case 2:
-				{
-					endTime = m_startTime[i] + (pMessage->fadein * strlen(pMessage->pMessage)) + pMessage->fadeout + pMessage->holdtime;
-					break;
-				}
+			case 2:
+			{
+				endTime = m_startTime[i] + (pMessage->fadein * strlen(pMessage->pMessage)) + pMessage->fadeout + pMessage->holdtime;
+				break;
+			}
 			}
 
 			if (fTime <= endTime)
@@ -466,24 +467,24 @@ int CHudMessage::Draw(void)
 	return 1;
 }
 
-int CHudMessage::MsgFunc_HudText(const char *pszName, int iSize, void *pbuf)
+int CHudMessage::MsgFunc_HudText(const char* pszName, int iSize, void* pbuf)
 {
 	BEGIN_READ(pbuf, iSize);
 
-	char *pString = READ_STRING();
+	char* pString = READ_STRING();
 	int hintMessage = READ_BYTE();
 
 	if (!READ_OK())
 		hintMessage = 0;
 
-	CDictionary *dict = g_pViewPort->FindDictionary(pString, DICT_MESSAGE);
+	CDictionary* dict = g_pViewPort->FindDictionary(pString, DICT_MESSAGE);
 
-	if(cap_show && cap_show->value)
+	if (cap_show && cap_show->value)
 	{
 		gEngfuncs.Con_Printf((dict) ? "CaptionMod: TextMessage [%s] found.\n" : "CaptionMod: TextMessage [%s] not found.\n", pString);
 	}
 
-	if(dict && dict->m_pTextMessage)
+	if (dict && dict->m_pTextMessage)
 	{
 		dict->ReplaceKey();
 
@@ -498,21 +499,21 @@ int CHudMessage::MsgFunc_HudText(const char *pszName, int iSize, void *pbuf)
 	return 0;
 }
 
-int CHudMessage::MsgFunc_HudTextArgs(const char *pszName, int iSize, void *pbuf)
+int CHudMessage::MsgFunc_HudTextArgs(const char* pszName, int iSize, void* pbuf)
 {
 	BEGIN_READ(pbuf, iSize);
 
-	char *pString = READ_STRING();
+	char* pString = READ_STRING();
 	int hintMessage = READ_BYTE();
 
-	CDictionary *dict = g_pViewPort->FindDictionary(pString, DICT_MESSAGE);
+	CDictionary* dict = g_pViewPort->FindDictionary(pString, DICT_MESSAGE);
 
-	if(cap_show && cap_show->value)
+	if (cap_show && cap_show->value)
 	{
 		gEngfuncs.Con_Printf((dict) ? "CaptionMod: TextMessage [%s] found.\n" : "CaptionMod: TextMessage [%s] not found.\n", pString);
 	}
 
-	if(dict && dict->m_pTextMessage)
+	if (dict && dict->m_pTextMessage)
 	{
 		dict->ReplaceKey();
 
@@ -524,7 +525,7 @@ int CHudMessage::MsgFunc_HudTextArgs(const char *pszName, int iSize, void *pbuf)
 
 			for (int i = 0; i < m_pMessages[slotNum].numArgs; i++)
 			{
-				char *tmp = READ_STRING();
+				char* tmp = READ_STRING();
 
 				if (!tmp)
 					tmp = "";
@@ -542,10 +543,10 @@ int CHudMessage::MsgFunc_HudTextArgs(const char *pszName, int iSize, void *pbuf)
 	return 0;
 }
 
-int CHudMessage::MessageAdd(client_textmessage_t *newMessage, float time, int hintMessage, unsigned int m_hFont)
+int CHudMessage::MessageAdd(client_textmessage_t* newMessage, float time, int hintMessage, unsigned int m_hFont)
 {
 	int i;
-	client_textmessage_t *tempMessage;
+	client_textmessage_t* tempMessage;
 	int emptySlot = -1;
 
 	for (i = 0; i < maxHUDMessages; i++)
@@ -601,7 +602,7 @@ int CHudMessage::MessageAdd(client_textmessage_t *newMessage, float time, int hi
 	return emptySlot;
 }
 
-void CHudMessage::MessageAdd(client_textmessage_t *newMessage)
+void CHudMessage::MessageAdd(client_textmessage_t* newMessage)
 {
 	m_parms.time = cl_time;
 
@@ -617,11 +618,11 @@ void CHudMessage::MessageAdd(client_textmessage_t *newMessage)
 	}
 }
 
-client_textmessage_t *pfnTextMessageGet(const char *pName)
+client_textmessage_t* pfnTextMessageGet(const char* pName)
 {
-	CDictionary *dict = g_pViewPort->FindDictionary(pName);
+	CDictionary* dict = g_pViewPort->FindDictionary(pName);
 
-	if(dict && dict->m_pTextMessage)
+	if (dict && dict->m_pTextMessage)
 	{
 		return NULL;
 	}

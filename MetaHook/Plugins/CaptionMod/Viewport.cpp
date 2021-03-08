@@ -16,7 +16,7 @@
 
 using namespace vgui;
 
-CViewport *g_pViewPort = NULL;
+CViewport* g_pViewPort = NULL;
 
 //Dictionary hashtable
 CMemoryPool m_HashItemMemPool(sizeof(hash_item_t), 64);
@@ -44,10 +44,10 @@ CViewport::~CViewport(void)
 
 }
 
-CDictionary *CViewport::FindDictionary(const char *szValue)
+CDictionary* CViewport::FindDictionary(const char* szValue)
 {
 	int hash = 0;
-	hash_item_t *item;
+	hash_item_t* item;
 	int count;
 
 	hash = CaseInsensitiveHash(szValue, m_StringsHashTable.Count());
@@ -73,10 +73,10 @@ CDictionary *CViewport::FindDictionary(const char *szValue)
 	return item->dict;
 }
 
-CDictionary *CViewport::FindDictionary(const char *szValue, dict_t Type)
+CDictionary* CViewport::FindDictionary(const char* szValue, dict_t Type)
 {
 	int hash = 0;
-	hash_item_t *item;
+	hash_item_t* item;
 	int count;
 
 	hash = CaseInsensitiveHash(szValue, m_StringsHashTable.Count());
@@ -102,7 +102,7 @@ CDictionary *CViewport::FindDictionary(const char *szValue, dict_t Type)
 	return item->dict;
 }
 
-int CViewport::CaseInsensitiveHash(const char *string, int iBounds)
+int CViewport::CaseInsensitiveHash(const char* string, int iBounds)
 {
 	unsigned int hash = 0;
 
@@ -125,9 +125,9 @@ int CViewport::CaseInsensitiveHash(const char *string, int iBounds)
 void CViewport::EmptyDictionaryHash(void)
 {
 	int i;
-	hash_item_t *item;
-	hash_item_t *temp;
-	hash_item_t *free;
+	hash_item_t* item;
+	hash_item_t* temp;
+	hash_item_t* free;
 
 	for (i = 0; i < m_StringsHashTable.Count(); i++)
 	{
@@ -147,16 +147,16 @@ void CViewport::EmptyDictionaryHash(void)
 	}
 }
 
-void CViewport::AddDictionaryHash(CDictionary *dict, const char *value)
+void CViewport::AddDictionaryHash(CDictionary* dict, const char* value)
 {
 	int count;
-	hash_item_t *item;
-	hash_item_t *next;
-	hash_item_t *temp;
-	hash_item_t *newp;
+	hash_item_t* item;
+	hash_item_t* next;
+	hash_item_t* temp;
+	hash_item_t* newp;
 	unsigned int hash = 0;
 	int dictIndex;
-	CDictionary *dictTemp;
+	CDictionary* dictTemp;
 
 	if (!dict->m_szTitle[0])
 		return;
@@ -206,7 +206,7 @@ void CViewport::AddDictionaryHash(CDictionary *dict, const char *value)
 		if (item->dict != dictTemp)
 		{
 			temp = item->next;
-			newp = (hash_item_t *)m_HashItemMemPool.Alloc(sizeof(hash_item_t));
+			newp = (hash_item_t*)m_HashItemMemPool.Alloc(sizeof(hash_item_t));
 			item->next = newp;
 			newp->dict = dictTemp;
 			newp->lastHash = NULL;
@@ -226,11 +226,11 @@ void CViewport::AddDictionaryHash(CDictionary *dict, const char *value)
 	}
 }
 
-void CViewport::RemoveDictionaryHash(CDictionary *dict, const char *value)
+void CViewport::RemoveDictionaryHash(CDictionary* dict, const char* value)
 {
 	int hash = 0;
-	hash_item_t *item;
-	hash_item_t *last;
+	hash_item_t* item;
+	hash_item_t* last;
 	int dictIndex;
 	int count;
 
@@ -315,19 +315,19 @@ CDictionary::CDictionary()
 
 CDictionary::~CDictionary()
 {
-	if(m_pTextMessage)
+	if (m_pTextMessage)
 	{
-		if(m_pTextMessage->pMessage)
+		if (m_pTextMessage->pMessage)
 			delete m_pTextMessage->pMessage;
 		delete m_pTextMessage;
 	}
 }
 
-void CDictionary::Load(CSV::CSVDocument::row_type &row, Color &defaultColor, IScheme *ischeme)
+void CDictionary::Load(CSV::CSVDocument::row_type& row, Color& defaultColor, IScheme* ischeme)
 {
 	m_Color = defaultColor;
 
-	const char *title = row[0].c_str();
+	const char* title = row[0].c_str();
 
 	Q_strncpy(m_szTitle, title, sizeof(m_szTitle));
 
@@ -339,14 +339,14 @@ void CDictionary::Load(CSV::CSVDocument::row_type &row, Color &defaultColor, ISc
 	}
 
 	//2015-11-26 added to support !SENTENCE and #SENTENCE
-	if(title[0] == '!' || title[0] == '#')
+	if (title[0] == '!' || title[0] == '#')
 	{
 		m_Type = DICT_SENTENCE;
 	}
 
 	//If it's a textmessage found in engine (gamedir/titles.txt)
-	client_textmessage_t *textmsg = gEngfuncs.pfnTextMessageGet(title);
-	if(textmsg)
+	client_textmessage_t* textmsg = gEngfuncs.pfnTextMessageGet(title);
+	if (textmsg)
 	{
 		m_Type = DICT_MESSAGE;
 		m_pTextMessage = new client_textmessage_t;
@@ -354,20 +354,20 @@ void CDictionary::Load(CSV::CSVDocument::row_type &row, Color &defaultColor, ISc
 	}
 
 	//Translated text
-	const char *sentence = row[1].c_str();
-	wchar_t *pLocalized = NULL;
+	const char* sentence = row[1].c_str();
+	wchar_t* pLocalized = NULL;
 	int localizedLength;
-	if(sentence[0] == '#')
+	if (sentence[0] == '#')
 	{
 		pLocalized = localize()->Find(sentence);
-		if(pLocalized)
+		if (pLocalized)
 		{
 			localizedLength = Q_wcslen(pLocalized);
 			m_szSentence.SetSize(localizedLength + 1);
 			Q_wcsncpy(&m_szSentence[0], pLocalized, (localizedLength + 1) * sizeof(wchar_t));
 		}
 	}
-	if(!pLocalized)
+	if (!pLocalized)
 	{
 		localizedLength = MultiByteToWideChar(CP_ACP, 0, sentence, -1, NULL, 0);
 		m_szSentence.SetSize(localizedLength + 1);
@@ -376,31 +376,31 @@ void CDictionary::Load(CSV::CSVDocument::row_type &row, Color &defaultColor, ISc
 	}
 
 	//There is no <pattern> in text, marked as replaced
-	if(!wcschr(&m_szSentence[0], L'<'))
+	if (!wcschr(&m_szSentence[0], L'<'))
 	{
 		m_bKeyReplaced = true;
 	}
 
 	ReplaceReturn();
 
-	const char *color = row[2].c_str();
-	if(color[0])
+	const char* color = row[2].c_str();
+	if (color[0])
 	{
 		m_Color = ischeme->GetColor(color, defaultColor);
 
-		if(m_pTextMessage)
+		if (m_pTextMessage)
 		{
 			char szColor1[16];
 			char szColor2[16];
 			sscanf(color, "%s %s", szColor1, szColor2);
-			if(szColor2[0])
+			if (szColor2[0])
 			{
 				Color clrColor2 = ischeme->GetColor(szColor2, defaultColor);
 				m_pTextMessage->r2 = clrColor2.r();
 				m_pTextMessage->g2 = clrColor2.g();
 				m_pTextMessage->b2 = clrColor2.b();
 			}
-			if(szColor1[0])
+			if (szColor1[0])
 			{
 				Color clrColor1 = ischeme->GetColor(szColor1, defaultColor);
 				m_pTextMessage->r1 = clrColor1.r();
@@ -410,31 +410,31 @@ void CDictionary::Load(CSV::CSVDocument::row_type &row, Color &defaultColor, ISc
 		}
 	}
 
-	const char *duration = row[3].c_str();
-	if(duration[0])
+	const char* duration = row[3].c_str();
+	if (duration[0])
 	{
 		m_flDuration = Q_atof(duration);
 
-		if(m_pTextMessage)
+		if (m_pTextMessage)
 		{
 			m_pTextMessage->holdtime = m_flDuration;
 		}
 	}
 
-	const char *speaker = row[4].c_str();
-	if(speaker[0])
+	const char* speaker = row[4].c_str();
+	if (speaker[0])
 	{
-		if(speaker[0] == '#')
+		if (speaker[0] == '#')
 		{
 			pLocalized = localize()->Find(speaker);
-			if(pLocalized)
+			if (pLocalized)
 			{
 				localizedLength = Q_wcslen(pLocalized);
 				m_szSpeaker.SetSize(localizedLength + 1);
 				Q_wcsncpy(&m_szSpeaker[0], pLocalized, (localizedLength + 1) * sizeof(wchar_t));
 			}
 		}
-		if(!pLocalized)
+		if (!pLocalized)
 		{
 			localizedLength = MultiByteToWideChar(CP_ACP, 0, speaker, -1, NULL, 0);
 			m_szSpeaker.SetSize(localizedLength + 1);
@@ -443,41 +443,41 @@ void CDictionary::Load(CSV::CSVDocument::row_type &row, Color &defaultColor, ISc
 		}
 	}
 
-	if(m_pTextMessage)
+	if (m_pTextMessage)
 	{
 		//Covert the sentence text to UTF8
 		int utf8Length = WideCharToMultiByte(CP_UTF8, 0, &m_szSentence[0], -1, NULL, 0, NULL, NULL);
-		char *utf8Text = new char[utf8Length + 1];
+		char* utf8Text = new char[utf8Length + 1];
 		WideCharToMultiByte(CP_UTF8, 0, &m_szSentence[0], -1, utf8Text, utf8Length, NULL, NULL);
 		utf8Text[utf8Length] = '\0';
-		m_pTextMessage->pMessage = utf8Text; 
+		m_pTextMessage->pMessage = utf8Text;
 	}
 
 	//Next dictionary
-	if(row.size() >= 7)
+	if (row.size() >= 7)
 	{
-		const char *next = row[5].c_str();
-		if(next[0])
+		const char* next = row[5].c_str();
+		if (next[0])
 		{
 			Q_strncpy(m_szNext, next, sizeof(m_szNext));
 		}
 
-		const char *nextdelay = row[6].c_str();
-		if(nextdelay[0])
+		const char* nextdelay = row[6].c_str();
+		if (nextdelay[0])
 		{
 			m_flNextDelay = Q_atof(nextdelay);
 		}
 	}
 
 	//Text alignment
-	if(row.size() >= 8)
+	if (row.size() >= 8)
 	{
-		const char *textalign = row[7].c_str();
-		if(textalign[0] == 'R' || textalign[0] == 'r')
+		const char* textalign = row[7].c_str();
+		if (textalign[0] == 'R' || textalign[0] == 'r')
 			m_iTextAlign = ALIGN_RIGHT;
-		else if(textalign[0] == 'C' || textalign[0] == 'c')
+		else if (textalign[0] == 'C' || textalign[0] == 'c')
 			m_iTextAlign = ALIGN_CENTER;
-		if(textalign[0] == 'L' || textalign[0] == 'l')
+		if (textalign[0] == 'L' || textalign[0] == 'l')
 			m_iTextAlign = ALIGN_LEFT;
 	}
 }
@@ -493,21 +493,21 @@ void CViewport::LoadDictionary(void)
 	{
 		row_count = doc.load_file("captionmod/dictionary.csv");
 	}
-	catch(std::exception &err)
+	catch (std::exception& err)
 	{
 		Sys_ErrorEx("%s\n%s", "LoadDictionary: ", err.what());
 	}
 
-	if(row_count < 2)
+	if (row_count < 2)
 		return;
 
-	IScheme *ischeme = scheme()->GetIScheme(GetScheme());
+	IScheme* ischeme = scheme()->GetIScheme(GetScheme());
 
-	if(!ischeme)
+	if (!ischeme)
 		return;
 
 	Color defaultColor = ischeme->GetColor("BaseText", Color(255, 255, 255, 200));
-	
+
 	//Initialize the dictionary hashtable
 	m_StringsHashTable.SetSize(2048);
 
@@ -517,21 +517,21 @@ void CViewport::LoadDictionary(void)
 	EmptyDictionaryHash();
 
 	int nRowCount = row_count;
-	
+
 	//parse the dictionary line by line...
-	for (int i = 1;i < nRowCount; ++i)
+	for (int i = 1; i < nRowCount; ++i)
 	{
 		CSV::CSVDocument::row_type row = doc.get_row(i);
 
-		if(row.size() < 1)
+		if (row.size() < 1)
 			continue;
 
-		const char *title = row[0].c_str();
+		const char* title = row[0].c_str();
 
-		if(!title || !title[0])
+		if (!title || !title[0])
 			continue;
 
-		CDictionary *Dict = new CDictionary;
+		CDictionary* Dict = new CDictionary;
 
 		Dict->Load(row, defaultColor, ischeme);
 
@@ -542,10 +542,10 @@ void CViewport::LoadDictionary(void)
 
 	//Link the dictionaries
 
-	for(int i = 0; i < m_Dictionary.Count(); ++i)
+	for (int i = 0; i < m_Dictionary.Count(); ++i)
 	{
-		CDictionary *Dict = m_Dictionary[i];
-		if(Dict->m_szNext[0])
+		CDictionary* Dict = m_Dictionary[i];
+		if (Dict->m_szNext[0])
 		{
 			Dict->m_pNext = FindDictionary(Dict->m_szNext);
 		}
@@ -553,23 +553,23 @@ void CViewport::LoadDictionary(void)
 }
 
 //KeyBinding Name(jump) -> Key Name(SPACE)
-const char *PrimaryKey_ForBinding(const char *binding)
+const char* PrimaryKey_ForBinding(const char* binding)
 {
-	if(binding[0] == '+')
-		binding ++;
+	if (binding[0] == '+')
+		binding++;
 
 	for (int i = 255; i >= 0; --i)
 	{
-		const char *found = gameuifuncs->Key_BindingForKey(i);
+		const char* found = gameuifuncs->Key_BindingForKey(i);
 
-		if(found && found[0])
+		if (found && found[0])
 		{
-			if(found[0] == '+')
-				found ++;
-			if(!Q_stricmp(found, binding))
+			if (found[0] == '+')
+				found++;
+			if (!Q_stricmp(found, binding))
 			{
-				const char *key = gameuifuncs->Key_NameForKey(i);
-				if(key && key[0])
+				const char* key = gameuifuncs->Key_NameForKey(i);
+				if (key && key[0])
 				{
 					return key;
 				}
@@ -581,7 +581,7 @@ const char *PrimaryKey_ForBinding(const char *binding)
 
 void CDictionary::AddPrefix(void)
 {
-	if(m_bPrefixAdded)
+	if (m_bPrefixAdded)
 		return;
 
 	m_bPrefixAdded = true;
@@ -589,13 +589,13 @@ void CDictionary::AddPrefix(void)
 	int nSentenceLength = Q_wcslen(&m_szSentence[0]);
 	int nSpeakerLength = Q_wcslen(&m_szSpeaker[0]);
 
-	if(!nSentenceLength || !nSpeakerLength)
+	if (!nSentenceLength || !nSpeakerLength)
 		return;
 
 	//No enough space for new sentence?
 	int nCharToAdd = (nSentenceLength + nSpeakerLength + 1) - m_szSentence.Count();
 
-	if(nCharToAdd > 0)
+	if (nCharToAdd > 0)
 		m_szSentence.AddMultipleToTail(nCharToAdd);
 
 	memcpy(&m_szSentence[0] + nSpeakerLength, &m_szSentence[0], sizeof(wchar_t) * nSentenceLength);
@@ -605,56 +605,56 @@ void CDictionary::AddPrefix(void)
 
 void CDictionary::ReplaceKey(void)
 {
-	wchar_t *p = &m_szSentence[0];
-	wchar_t *pLeftQuote = NULL;
-	wchar_t *pRightQuote = NULL;
-	const char *pszBinding = NULL;
+	wchar_t* p = &m_szSentence[0];
+	wchar_t* pLeftQuote = NULL;
+	wchar_t* pRightQuote = NULL;
+	const char* pszBinding = NULL;
 	wchar_t wszKey[32];
 	char szKey[32];
 
-	if(m_bKeyReplaced)
+	if (m_bKeyReplaced)
 		return;
 
 	m_bKeyReplaced = true;
 
 	bool bReplaced = false;
 
-	while(*p++)
+	while (*p++)
 	{
-		if(!pRightQuote && *p == L'<')
+		if (!pRightQuote && *p == L'<')
 			pLeftQuote = p;
-		if(pLeftQuote && *p == L'>')
+		if (pLeftQuote && *p == L'>')
 			pRightQuote = p;
 
-		if(pLeftQuote && pRightQuote)
+		if (pLeftQuote && pRightQuote)
 		{
-			int maxBytes = min(sizeof(wchar_t)*(pRightQuote-pLeftQuote), sizeof(wszKey));
+			int maxBytes = min(sizeof(wchar_t) * (pRightQuote - pLeftQuote), sizeof(wszKey));
 			Q_wcsncpy(wszKey, pLeftQuote + 1, maxBytes);
 
-			if(!wszKey[0])
+			if (!wszKey[0])
 				continue;
 
 			int OldKeyLength = Q_wcslen(wszKey);
 
 			WideCharToMultiByte(CP_ACP, 0, wszKey, -1, szKey, sizeof(szKey), NULL, NULL);
-			szKey[sizeof(szKey)-1] = '\0';
+			szKey[sizeof(szKey) - 1] = '\0';
 
 			pszBinding = PrimaryKey_ForBinding(szKey);
 
-			if(pszBinding)
+			if (pszBinding)
 			{
 				bReplaced = true;
-				MultiByteToWideChar(CP_ACP, 0, pszBinding, -1, wszKey, sizeof(wszKey)/sizeof(wchar_t));
+				MultiByteToWideChar(CP_ACP, 0, pszBinding, -1, wszKey, sizeof(wszKey) / sizeof(wchar_t));
 
 				//make it upper case
 				wcsupr(wszKey);
 
 				int NewKeyLength = Q_wcslen(wszKey);
 
-				if(NewKeyLength != OldKeyLength + 2)
+				if (NewKeyLength != OldKeyLength + 2)
 				{
 					//The new key is too long, we need to extend the vector!
-					if(NewKeyLength > OldKeyLength + 2)
+					if (NewKeyLength > OldKeyLength + 2)
 					{
 						int nExtendLength = NewKeyLength - OldKeyLength + 2;
 
@@ -682,7 +682,7 @@ void CDictionary::ReplaceKey(void)
 					//Do nothing since the total length did not change, skip the <pattern>
 					p = pRightQuote + 1;
 				}
-				
+
 				//Paste the key
 				memcpy(pLeftQuote, wszKey, sizeof(wchar_t) * NewKeyLength);
 			}
@@ -693,14 +693,14 @@ void CDictionary::ReplaceKey(void)
 		}
 	}
 
-	if(bReplaced && m_pTextMessage)
+	if (bReplaced && m_pTextMessage)
 	{
-		if(m_pTextMessage->pMessage)
+		if (m_pTextMessage->pMessage)
 			delete m_pTextMessage->pMessage;
 
 		//Covert the text to UTF8
 		int utf8Length = WideCharToMultiByte(CP_UTF8, 0, &m_szSentence[0], -1, NULL, 0, NULL, NULL);
-		char *utf8Text = new char[utf8Length + 1];
+		char* utf8Text = new char[utf8Length + 1];
 		WideCharToMultiByte(CP_UTF8, 0, &m_szSentence[0], -1, utf8Text, utf8Length, NULL, NULL);
 		utf8Text[utf8Length] = '\0';
 		m_pTextMessage->pMessage = utf8Text;
@@ -711,38 +711,38 @@ void CDictionary::ReplaceKey(void)
 //Purpose: replace all "\r" "\n" to '\r' '\n'
 void CDictionary::ReplaceReturn(void)
 {
-	wchar_t *p = &m_szSentence[0];
+	wchar_t* p = &m_szSentence[0];
 
-	wchar_t *pBackSlash = NULL;
+	wchar_t* pBackSlash = NULL;
 
 	//empty sentence?
-	if(!p[0])
+	if (!p[0])
 		return;
 
 	//make sure we have at least two characters
-	while(*p && *(p + 1))
+	while (*p && *(p + 1))
 	{
-		if(*p == L'\\')
+		if (*p == L'\\')
 		{
 			int bMove = false;
-			if(*(p + 1) == L'r')
+			if (*(p + 1) == L'r')
 			{
 				*p = L'\r';
 				bMove = true;
 			}
-			else if(*(p + 1) == L'n')
+			else if (*(p + 1) == L'n')
 			{
 				*p = L'\n';
 				bMove = true;
 			}
-			if(bMove)
+			if (bMove)
 			{
 				int nCharsToMove = Q_wcslen(p + 2);
 				memcpy(p + 1, p + 2, (nCharsToMove + 1) * sizeof(wchar_t));
 			}
 		}
 
-		p ++;
+		p++;
 	}
 }
 
@@ -775,14 +775,18 @@ void CViewport::Init(void)
 	m_HudMessage.Init();
 }
 
-void CViewport::StartSubtitle(CDictionary *dict)
+void CViewport::StartSubtitle(CDictionary* dict)
 {
-	m_pSubtitle->StartSubtitle(dict, cl_time);
+	if (cap_enabled && cap_enabled->value) {
+		m_pSubtitle->StartSubtitle(dict, cl_time);
+	}
 }
 
-void CViewport::StartNextSubtitle(CDictionary *dict)
+void CViewport::StartNextSubtitle(CDictionary* dict)
 {
-	m_pSubtitle->StartNextSubtitle(dict);
+	if (cap_enabled && cap_enabled->value) {
+		m_pSubtitle->StartNextSubtitle(dict);
+	}
 }
 
 void CViewport::ActivateClientUI(void)
