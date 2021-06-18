@@ -12,8 +12,9 @@
 cl_enginefunc_t gEngfuncs;
 
 cvar_t* al_enable = NULL;
-cvar_t* cap_show = NULL;
+cvar_t* cap_debug = NULL;
 cvar_t* cap_enabled = NULL;
+cvar_t* cap_max_distance = NULL;
 
 void* NewClientFactory(void)
 {
@@ -50,8 +51,9 @@ void HUD_Init(void)
 	g_pViewPort->Init();
 
 	al_enable = gEngfuncs.pfnGetCvarPointer("al_enable");
-	cap_show = gEngfuncs.pfnRegisterVariable("cap_show", "0", FCVAR_CLIENTDLL);
-	cap_enabled = gEngfuncs.pfnRegisterVariable("cap_enabled", "1", FCVAR_CLIENTDLL);
+	cap_debug = gEngfuncs.pfnRegisterVariable("cap_show", "0", FCVAR_CLIENTDLL);
+	cap_enabled = gEngfuncs.pfnRegisterVariable("cap_enabled", "1", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
+	cap_max_distance = gEngfuncs.pfnRegisterVariable("cap_max_distance", "1500", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
 	gEngfuncs.pfnAddCommand("cap_version", Cap_Version_f);
 }
 
@@ -112,7 +114,7 @@ void S_StartWave(sfx_t* sfx)
 
 	CDictionary* Dict = g_pViewPort->FindDictionary(name, DICT_SOUND);
 
-	if (cap_show && cap_show->value)
+	if (cap_debug && cap_debug->value)
 	{
 		gEngfuncs.Con_Printf((Dict) ? "CaptionMod: Sound [%s] found.\n" : "CaptionMod: Sound [%s] not found.\n", name);
 	}
@@ -148,7 +150,7 @@ void S_StartSentence(const char* name)
 		Dict = g_pViewPort->FindDictionary(name + 1);
 	}
 
-	if (cap_show && cap_show->value)
+	if (cap_debug && cap_debug->value)
 	{
 		gEngfuncs.Con_Printf((Dict) ? "CaptionMod: SENTENCE [%s] found.\n" : "CaptionMod: SENTENCE [%s] not found.\n", name);
 	}
@@ -177,15 +179,28 @@ void S_StartDynamicSound(int entnum, int entchannel, sfx_t* sfx, float* origin, 
 {
 	if (sfx)
 	{
-		if (sfx->name[0] == '!' || sfx->name[0] == '#')
+		bool bIgnore = false;
+		if (cap_max_distance->value)
 		{
-			m_bSentenceSound = true;
-			m_flSentenceDuration = 0;
-			S_StartSentence(sfx->name);
+			float dir[3];
+			VectorSubtract(origin, gEngfuncs.GetLocalPlayer()->origin, dir);
+			auto distance = VectorLength(dir);
+			if (distance > cap_max_distance->value)
+				bIgnore = true;
 		}
-		else
+
+		if (!bIgnore)
 		{
-			S_StartWave(sfx);
+			if (sfx->name[0] == '!' || sfx->name[0] == '#')
+			{
+				m_bSentenceSound = true;
+				m_flSentenceDuration = 0;
+				S_StartSentence(sfx->name);
+			}
+			else
+			{
+				S_StartWave(sfx);
+			}
 		}
 	}
 
@@ -205,15 +220,28 @@ void S_StartStaticSound(int entnum, int entchannel, sfx_t* sfx, float* origin, f
 {
 	if (sfx)
 	{
-		if (sfx->name[0] == '!' || sfx->name[0] == '#')
+		bool bIgnore = false;
+		if (cap_max_distance->value)
 		{
-			m_bSentenceSound = true;
-			m_flSentenceDuration = 0;
-			S_StartSentence(sfx->name);
+			float dir[3];
+			VectorSubtract(origin, gEngfuncs.GetLocalPlayer()->origin, dir);
+			auto distance = VectorLength(dir);
+			if (distance > cap_max_distance->value)
+				bIgnore = true;
 		}
-		else
+
+		if (!bIgnore)
 		{
-			S_StartWave(sfx);
+			if (sfx->name[0] == '!' || sfx->name[0] == '#')
+			{
+				m_bSentenceSound = true;
+				m_flSentenceDuration = 0;
+				S_StartSentence(sfx->name);
+			}
+			else
+			{
+				S_StartWave(sfx);
+			}
 		}
 	}
 

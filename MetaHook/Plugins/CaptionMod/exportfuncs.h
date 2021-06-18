@@ -15,7 +15,7 @@
 #include <usercmd.h>
 #include "enginedef.h"
 
-#define CAPTION_MOD_VERSION "Caption Mod 3.5"
+#define CAPTION_MOD_VERSION "Caption Mod 3.6"
 
 extern cl_enginefunc_t gEngfuncs;
 
@@ -43,5 +43,6 @@ sfxcache_t* S_LoadSound(sfx_t* s, channel_t* ch);
 sfx_t* S_FindName(char* name, int* pfInCache);
 void Sys_ErrorEx(const char* fmt, ...);
 
-extern cvar_t* cap_show;
+extern cvar_t* cap_debug;
 extern cvar_t* cap_enabled;
+extern cvar_t* cap_max_distance;
