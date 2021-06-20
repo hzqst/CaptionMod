@@ -21,7 +21,6 @@ enum LineAnim_t
 
 class CSubLine;
 
-//animation for subtitle lines
 class CSubLineAnim
 {
 public:
@@ -56,7 +55,7 @@ public:
 	{
 		m_EndValue = EndValue;
 	}
-	virtual LineAnim_t GetType(void){return ANIM_MOVEMENT;}
+	virtual LineAnim_t GetType(void) { return ANIM_MOVEMENT; }
 	virtual bool Update(void);
 private:
 	int m_StartValue;
@@ -70,14 +69,13 @@ public:
 	{
 		m_EndValue = EndValue;
 	}
-	virtual LineAnim_t GetType(void){return ANIM_ALPHAFADE;}
+	virtual LineAnim_t GetType(void) { return ANIM_ALPHAFADE; }
 	virtual bool Update(void);
 private:
 	int m_StartValue;
 	int m_EndValue;
 };
 
-//one subtitle line
 class CSubLine
 {
 public:
@@ -111,13 +109,13 @@ public:
 	float			m_EndTime;
 	float			m_StartTime;
 	float			m_Duration;
-	Color			m_Color;//实际渲染颜色 //actual render color
-	int				m_Alpha;//实际渲染alpha（0~255，叠加在原颜色alpha上）//actual alpha multiplier
-	int				m_YPos;//实际渲染位置Y坐标 //actual Y position
-	int				m_LineIndex;//行号，0为最下面 //line number, 0 means the bottom
-	bool			m_Retired;//是否应该消失 //should retire
-	float			m_FadeOut;//淡出时间
-	CUtlVector<CSubLineAnim *>	m_AnimList;//list of animation
+	Color			m_Color; //Render color
+	int				m_Alpha;//Alpha multiplier
+	int				m_YPos;//Y position
+	int				m_LineIndex;//Line number, 0 means the bottom
+	bool			m_Retired;//Should this line be retired?
+	float			m_FadeOut;//Fadeout duration
+	CUtlVector<CSubLineAnim *>	m_AnimList;//Animation list
 	SubtitlePanel	*m_Panel;//Subtitle panel
 	CDictionary		*m_Dict;//Linked dictionary
 	int				m_TextWide;
@@ -131,6 +129,7 @@ private:
 
 public:
 	SubtitlePanel(Panel *parent);
+	virtual ~SubtitlePanel();
 	void VidInit(void);
 
 public://Subtitle interface
@@ -144,25 +143,25 @@ protected:
 	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
 	virtual void PaintBackground(void);
 	virtual void Paint(void);
-	virtual void ApplySettings( KeyValues *inResourceData );
+	virtual void ApplySettings(KeyValues *inResourceData);
 
 	MESSAGE_FUNC(OnTick, "Tick");
 
-	CPanelAnimationVar( int, m_iCornorSize, "cornorsize", "8" );
-	CPanelAnimationVar( int, m_iXSpace, "xspace", "12" );
-	CPanelAnimationVar( int, m_iYSpace, "yspace", "8" );
-	CPanelAnimationVar( int, m_iLineSpace, "linespace", "8" );
-	CPanelAnimationVar( Color, m_PanelColor, "panelcolor", "SubtitleBG" );
-	CPanelAnimationVar( float, m_flFadeIn, "fadein", "0.5" );
-	CPanelAnimationVar( float, m_flFadeOut, "fadeout", "0.8" );
-	CPanelAnimationVar( float, m_flHoldTime, "holdtime", "4.0" );
-	CPanelAnimationVar( int, m_iPrefix, "prefix", "1" );
-	CPanelAnimationVar( int, m_iWaitPlay, "waitplay", "1" );
-	CPanelAnimationVar( float, m_flStartTimeScale, "stimescale", "1" );
-	CPanelAnimationVar( float, m_flHoldTimeScale, "htimescale", "1" );
+	CPanelAnimationVar(int, m_iCornorSize, "cornorsize", "8");
+	CPanelAnimationVar(int, m_iXSpace, "xspace", "12");
+	CPanelAnimationVar(int, m_iYSpace, "yspace", "8");
+	CPanelAnimationVar(int, m_iLineSpace, "linespace", "8");
+	CPanelAnimationVar(Color, m_PanelColor, "panelcolor", "SubtitleBG");
+	CPanelAnimationVar(float, m_flFadeIn, "fadein", "0.5");
+	CPanelAnimationVar(float, m_flFadeOut, "fadeout", "0.8");
+	CPanelAnimationVar(float, m_flHoldTime, "holdtime", "4.0");
+	CPanelAnimationVar(int, m_iPrefix, "prefix", "1");
+	CPanelAnimationVar(int, m_iWaitPlay, "waitplay", "1");
+	CPanelAnimationVar(int, m_iAntiSpam, "antispam", "1");
+	CPanelAnimationVar(float, m_flStartTimeScale, "stimescale", "1");
+	CPanelAnimationVar(float, m_flHoldTimeScale, "htimescale", "1");
 
 public:
-	//一些属性
 	//Some attributes
 	textalign_t					m_iTextAlign;
 	vgui::HFont					m_hTextFont;

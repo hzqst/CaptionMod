@@ -25,6 +25,21 @@ SubtitlePanel::SubtitlePanel(Panel *parent)  : EditablePanel(parent, "Subtitle")
 	vgui::ivgui()->AddTickSignal( GetVPanel() );
 };
 
+SubtitlePanel::~SubtitlePanel()
+{
+	for (int i = 0; i < m_Lines.Count(); ++i)
+	{
+		delete m_Lines[i];
+	}
+	m_Lines.RemoveAll();
+
+	for (int i = 0; i < m_BackLines.Count(); ++i)
+	{
+		delete m_BackLines[i];
+	}
+	m_BackLines.RemoveAll();
+}
+
 void SubtitlePanel::ApplySettings( KeyValues *inResourceData )
 {
 	BaseClass::ApplySettings( inResourceData );
@@ -346,6 +361,16 @@ void SubtitlePanel::StartSubtitle(CDictionary *Dict, float flStartTime)
 		//Already in list, do not start one subtitle for twice at the same time.
 		if(m_BackLines[i]->m_Dict == Dict)
 			return;
+	}
+
+	if (m_iAntiSpam)
+	{
+		for (int i = 0; i < m_Lines.Count(); ++i)
+		{
+			//Already in display, ignore
+			if (m_Lines[i]->m_Dict == Dict)
+				return;
+		}
 	}
 
 	Dict->ReplaceKey();
