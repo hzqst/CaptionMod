@@ -15,7 +15,7 @@
 #include <usercmd.h>
 #include "enginedef.h"
 
-#define CAPTION_MOD_VERSION "Caption Mod 3.6"
+#define CAPTION_MOD_VERSION "Caption Mod 2021-07-12"
 
 extern cl_enginefunc_t gEngfuncs;
 
@@ -25,6 +25,7 @@ void MSG_Init(void);
 int Initialize(struct cl_enginefuncs_s* pEnginefuncs, int iVersion);
 void HUD_Init(void);
 int HUD_VidInit(void);
+void HUD_Frame(double time);
 client_textmessage_t* pfnTextMessageGet(const char* pName);
 void Engine_FillAddress(void);
 void Engine_InstallHook(void);
@@ -46,3 +47,4 @@ void Sys_ErrorEx(const char* fmt, ...);
 extern cvar_t* cap_debug;
 extern cvar_t* cap_enabled;
 extern cvar_t* cap_max_distance;
+extern cvar_t *cap_netmessage;

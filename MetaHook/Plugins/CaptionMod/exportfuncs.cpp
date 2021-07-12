@@ -15,6 +15,7 @@ cvar_t* al_enable = NULL;
 cvar_t* cap_debug = NULL;
 cvar_t* cap_enabled = NULL;
 cvar_t* cap_max_distance = NULL;
+cvar_t *cap_netmessage = NULL;
 
 void* NewClientFactory(void)
 {
@@ -39,6 +40,14 @@ int HUD_VidInit(void)
 	return result;
 }
 
+void HUD_Frame(double time)
+{
+	if (g_pViewPort)
+		g_pViewPort->Think();
+
+	gExportfuncs.HUD_Frame(time);
+}
+
 void Cap_Version_f(void)
 {
 	gEngfuncs.Con_Printf("%s\n", CAPTION_MOD_VERSION);
@@ -54,6 +63,7 @@ void HUD_Init(void)
 	cap_debug = gEngfuncs.pfnRegisterVariable("cap_show", "0", FCVAR_CLIENTDLL);
 	cap_enabled = gEngfuncs.pfnRegisterVariable("cap_enabled", "1", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
 	cap_max_distance = gEngfuncs.pfnRegisterVariable("cap_max_distance", "1500", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
+	cap_netmessage = gEngfuncs.pfnRegisterVariable("cap_netmessage", "1", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
 	gEngfuncs.pfnAddCommand("cap_version", Cap_Version_f);
 }
 
