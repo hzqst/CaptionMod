@@ -9,6 +9,7 @@ mh_enginesave_t *g_pMetaSave;
 IFileSystem *g_pFileSystem;
 BOOL g_IsClientVGUI2 = false;
 HMODULE g_hClientDll = NULL;
+DWORD g_dwClientSize = 0;
 
 DWORD g_dwEngineBase, g_dwEngineSize;
 DWORD g_dwEngineBuildnum;
@@ -57,6 +58,9 @@ void IPlugins::LoadEngine(void)
 
 void IPlugins::LoadClient(cl_exportfuncs_t *pExportFunc)
 {
+	//Get video settings again since W&H might change during initialization.
+	g_iVideoMode = g_pMetaHookAPI->GetVideoMode(&g_iVideoWidth, &g_iVideoHeight, &g_iBPP, &g_bWindowed);
+
 	memcpy(&gExportfuncs, pExportFunc, sizeof(gExportfuncs));
 
 	pExportFunc->Initialize = Initialize;
@@ -66,20 +70,33 @@ void IPlugins::LoadClient(cl_exportfuncs_t *pExportFunc)
 
 	g_hClientDll = GetModuleHandle("client.dll");
 
+	if (!g_hClientDll)
+	{
+		Sys_ErrorEx("CaptionMod: client.dll not found.");
+	}
+
+	g_dwClientSize = g_pMetaHookAPI->GetModuleSize(g_hClientDll);
+
 	gCapFuncs.GetProcAddress = GetProcAddress;
 
 	//Try installing hook to interface VClientVGUI001
 	ClientVGUI_InstallHook();
 
-	//For TextMessage hook
+	VGUI1_InstallHook();
+
+	//hook textmsg
 	MSG_Init();
 
-	//For Meta Audio
+	//hook engine audio
 	Engine_InstallHook();
 }
 
 void IPlugins::ExitGame(int iResult)
 {
+	if (gCapFuncs.hk_GetProcAddress)
+		g_pMetaHookAPI->UnHook(gCapFuncs.hk_GetProcAddress);
+
+	ClientVGUI_Shutdown();
 }
 
 EXPOSE_SINGLE_INTERFACE(IPlugins, IPlugins, METAHOOK_PLUGIN_API_VERSION);

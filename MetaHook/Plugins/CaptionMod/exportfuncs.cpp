@@ -9,6 +9,8 @@
 #include <VGUI/VGUI.h>
 #include "Viewport.h"
 
+#include <intrin.h>
+
 cl_enginefunc_t gEngfuncs;
 
 cvar_t* al_enable = NULL;
@@ -16,6 +18,10 @@ cvar_t* cap_debug = NULL;
 cvar_t* cap_enabled = NULL;
 cvar_t* cap_max_distance = NULL;
 cvar_t *cap_netmessage = NULL;
+
+static CDictionary *m_SentenceDictionary = NULL;
+static qboolean m_bSentenceSound = false;
+static float m_flSentenceDuration = 0;
 
 void* NewClientFactory(void)
 {
@@ -35,7 +41,8 @@ int HUD_VidInit(void)
 {
 	int result = gExportfuncs.HUD_VidInit();
 
-	g_pViewPort->VidInit();
+	if(g_pViewPort)
+		g_pViewPort->VidInit();
 
 	return result;
 }
@@ -57,19 +64,18 @@ void HUD_Init(void)
 {
 	gExportfuncs.HUD_Init();
 
-	g_pViewPort->Init();
+	if(g_pViewPort)
+		g_pViewPort->Init();
 
 	al_enable = gEngfuncs.pfnGetCvarPointer("al_enable");
-	cap_debug = gEngfuncs.pfnRegisterVariable("cap_show", "0", FCVAR_CLIENTDLL);
+	cap_debug = gEngfuncs.pfnRegisterVariable("cap_debug", "0", FCVAR_CLIENTDLL);
 	cap_enabled = gEngfuncs.pfnRegisterVariable("cap_enabled", "1", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
 	cap_max_distance = gEngfuncs.pfnRegisterVariable("cap_max_distance", "1500", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
 	cap_netmessage = gEngfuncs.pfnRegisterVariable("cap_netmessage", "1", FCVAR_CLIENTDLL | FCVAR_ARCHIVE);
 	gEngfuncs.pfnAddCommand("cap_version", Cap_Version_f);
-}
 
-static CDictionary* m_SentenceDictionary = NULL;
-static qboolean m_bSentenceSound = false;
-static float m_flSentenceDuration = 0;
+
+}
 
 float S_GetDuration(sfx_t* sfx)
 {
@@ -103,6 +109,9 @@ float S_GetDuration(sfx_t* sfx)
 //2015-11-26 added, support added up the duration of sound for zero-duration sentences
 void S_StartWave(sfx_t* sfx)
 {
+	if (!g_pViewPort)
+		return;
+
 	const char* name = sfx->name;
 
 	if (!Q_strnicmp(name, "sound/", 6))
@@ -152,6 +161,9 @@ void S_StartWave(sfx_t* sfx)
 
 void S_StartSentence(const char* name)
 {
+	if (!g_pViewPort)
+		return;
+
 	CDictionary* Dict = g_pViewPort->FindDictionary(name, DICT_SENTENCE);
 
 	if (!Dict && (name[0] == '!' || name[0] == '#'))
@@ -171,6 +183,9 @@ void S_StartSentence(const char* name)
 //2015-11-26 fixed, to support !SENTENCE and #SENTENCE
 void S_EndSentence(void)
 {
+	if (!g_pViewPort)
+		return;
+
 	if (!m_SentenceDictionary)
 		return;
 

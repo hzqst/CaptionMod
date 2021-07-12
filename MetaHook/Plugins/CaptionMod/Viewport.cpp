@@ -38,12 +38,20 @@ CViewport::CViewport(void) : Panel(NULL, "CaptionViewport")
 	SetMouseInputEnabled(false);
 	SetKeyBoardInputEnabled(false);
 	SetProportional(true);
+	m_pSubtitle = NULL;
 	m_szLevelName[0] = 0;
 }
 
 CViewport::~CViewport(void)
 {
+	for (int i = 0; i < m_Dictionary.Count(); ++i)
+	{
+		delete m_Dictionary[i];
+	}
 
+	m_Dictionary.RemoveAll();
+
+	delete m_pSubtitle;
 }
 
 CDictionary* CViewport::FindDictionary(const char* szValue)
@@ -342,6 +350,7 @@ CDictionary::~CDictionary()
 		if (m_pTextMessage->pMessage)
 			delete m_pTextMessage->pMessage;
 		delete m_pTextMessage;
+		m_pTextMessage = NULL;
 	}
 }
 
@@ -394,12 +403,27 @@ void CDictionary::Load(CSV::CSVDocument::row_type& row, Color& defaultColor, ISc
 	}
 
 	//If it's a textmessage found in engine (gamedir/titles.txt)
-	client_textmessage_t* textmsg = gEngfuncs.pfnTextMessageGet(m_szTitle.c_str());
+	client_textmessage_t *textmsg = gEngfuncs.pfnTextMessageGet(m_szTitle.c_str());
 	if (textmsg)
 	{
 		m_Type = DICT_MESSAGE;
 		m_pTextMessage = new client_textmessage_t;
 		memcpy(m_pTextMessage, textmsg, sizeof(client_textmessage_t));
+		m_pTextMessage->pMessage = (const char *)new char[HUDMESSAGE_MAXLENGTH];
+	}
+
+	//2015-11-26 added to support NETMESSAGE:
+	if (!Q_strncmp(m_szTitle.c_str(), "NETMESSAGE_REGEX:", sizeof("NETMESSAGE_REGEX:") - 1))
+	{
+		m_Type = DICT_NETMESSAGE;
+		m_szTitle = m_szTitle.substr(sizeof("NETMESSAGE_REGEX:") - 1);
+		m_bRegex = true;
+	}
+	else if (!Q_strncmp(m_szTitle.c_str(), "NETMESSAGE:", sizeof("NETMESSAGE:") - 1))
+	{
+		m_Type = DICT_NETMESSAGE;
+		m_szTitle = m_szTitle.substr(sizeof("NETMESSAGE:") - 1);
+		m_bRegex = false;
 	}
 
 	//Translated text
@@ -492,11 +516,15 @@ void CDictionary::Load(CSV::CSVDocument::row_type& row, Color& defaultColor, ISc
 	if (m_pTextMessage)
 	{
 		//Covert the sentence text to UTF8
-		int utf8Length = WideCharToMultiByte(CP_UTF8, 0, &m_szSentence[0], -1, NULL, 0, NULL, NULL);
-		char* utf8Text = new char[utf8Length + 1];
-		WideCharToMultiByte(CP_UTF8, 0, &m_szSentence[0], -1, utf8Text, utf8Length, NULL, NULL);
-		utf8Text[utf8Length] = '\0';
-		m_pTextMessage->pMessage = utf8Text;
+		std::string sentence;
+		sentence.resize(HUDMESSAGE_MAXLENGTH);
+
+		int finalLength = localize()->ConvertUnicodeToANSI(m_szSentence.data(), (char *)sentence.data(), sentence.length());
+
+		sentence.resize(finalLength);
+
+		V_strncpy((char *)m_pTextMessage->pMessage, sentence.data(), HUDMESSAGE_MAXLENGTH - 1);
+		((char *)m_pTextMessage->pMessage)[HUDMESSAGE_MAXLENGTH - 1] = 0;
 	}
 
 	//Next dictionary
@@ -591,7 +619,7 @@ void CViewport::LinkDictionary(void)
 void CViewport::LoadBaseDictionary(void)
 {
 	CSV::CSVDocument doc;
-	CSV::CSVDocument::row_index_type row_count;
+	CSV::CSVDocument::row_index_type row_count = 0;
 
 	//Parse from the document
 
@@ -644,17 +672,6 @@ void CViewport::LoadBaseDictionary(void)
 		m_Dictionary.AddToTail(Dict);
 
 		AddDictionaryHash(Dict, Dict->m_szTitle.c_str());
-	}
-
-	//Link the dictionaries
-
-	for (int i = 0; i < m_Dictionary.Count(); ++i)
-	{
-		CDictionary* Dict = m_Dictionary[i];
-		if (Dict->m_szNext[0])
-		{
-			Dict->m_pNext = FindDictionary(Dict->m_szNext.c_str());
-		}
 	}
 }
 
