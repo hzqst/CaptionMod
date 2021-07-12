@@ -12,6 +12,8 @@
 
 using namespace vgui;
 
+char *m_pSenderName = NULL;
+
 CHudMessage m_HudMessage;
 
 //2015-11-27 added, support for Counter-Strike's HudTextPro message
@@ -51,7 +53,11 @@ int __MsgFunc_SendAudio(const char* pszName, int iSize, void* pbuf)
 	if (m_HudMessage.MsgFunc_SendAudio(pszName, iSize, pbuf) != 0)
 		return 1;
 
-	return m_pfnSendAudio(pszName, iSize, pbuf);
+	int result =  m_pfnSendAudio(pszName, iSize, pbuf);
+
+	m_pSenderName = NULL;
+
+	return result;
 }
 
 void CHudMessage::Init(void)
@@ -666,12 +672,17 @@ int CHudMessage::MsgFunc_SendAudio(const char* pszName, int iSize, void* pbuf)
 {
 	BEGIN_READ(pbuf, iSize);
 
-	int senderIndex = READ_BYTE();
+	int entIndex = READ_BYTE();
 	char* pString = READ_STRING();
 	int pitch = READ_SHORT();
 
 	if (!READ_OK())
 		pitch = 0;
+
+	hud_player_info_t info;
+	gEngfuncs.pfnGetPlayerInfo(entIndex, &info);
+
+	m_pSenderName = info.name;
 
 	CDictionary* dict = g_pViewPort->FindDictionary(pString, DICT_SENDAUDIO);
 
