@@ -1,4 +1,4 @@
-# CaptionMod 3.5
+# CaptionMod
 
 This is a caption/subtitle plugin designed for displaying captions/subtitles in GoldSRC engine & VGUI2 based singleplayer games.
 
@@ -10,6 +10,8 @@ It could display captions/subtitles when:
 
 3. HudText or HudTextPro (Counter Strike 1.6 or Condition Zero) is displayed.
 
+4. Counter Strike 1.6 or Condition Zero SendAudio (radio) message
+
 # Build Requirement:
 
   MetaHook (https://github.com/Nagist/metahook)
@@ -18,15 +20,9 @@ It could display captions/subtitles when:
   
 # Build Instruction
 
-1. git clone https://github.com/Nagist/metahook
+Open CaptionMod.sln with MSVC and build it with Release config.
 
-2. Put the CaptionMod folder in `MetaHook\Plugins\CaptionMod` , the dir should looks like
-
-MetaHook&#92;<br/>&emsp;Plugins&#92;<br/>&emsp;&emsp;CaptionMod&#92;<br/>&emsp;&emsp;&emsp;CaptionMod.sln<br/>
-    
-4. Open CaptionMod.sln with MSVC and build it with Release config.
-
-If no error occurs, output binary will be at `MetaHook\Plugins\CaptionMod\Release\CaptionMod.dll`
+If no error occurs, output binary will be at `MetaHook\Plugins\CaptionMod\Release\CaptionMod.dll` and `Binary\CaptionMod.dll`
 
 # Installation (for those who don't have or don't want to build the binary for themself)
 
@@ -38,15 +34,23 @@ If no error occurs, output binary will be at `MetaHook\Plugins\CaptionMod\Releas
 
 4. Launch game from `steamapps\common\Half-Life\metahook.exe -game (your_game_name)`
 
-# Usage Instruction
+# Console cvar
 
-### console var: cap_enabled 0 / 1
+### cap_enabled 0 / 1
 
 When set to 0, captions will be disabled. Otherwise, captions will be enabled.
 
-### console var: cap_show 0 / 1
+### cap_debug 0 / 1
 
 When set to 1, debug message will be displayed in the console.
+
+### cap_netmessage 0 / 1
+
+When set to 1, __NETMESSAGE__ will be translated.
+
+### cap_max_distance
+
+When set to non-zero, sound or sentences playing far away from this distance will be ignored.
 
 ### console command: cap_version
 
