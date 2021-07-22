@@ -1,4 +1,10 @@
-# CaptionMod
+# CaptionMod (legacy)
+
+All features are portd to, and any new update will be committed to: [MetaHookSv](https://github.com/hzqst/MetaHookSv) -> [CaptionMod](https://github.com/hzqst/MetaHookSv/blob/main/CaptionMod.md)
+
+This repo has been archived.
+
+# 
 
 This is a caption/subtitle plugin designed for displaying captions/subtitles in GoldSRC engine & VGUI2 based singleplayer games.
 
